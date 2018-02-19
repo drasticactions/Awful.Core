@@ -26,7 +26,8 @@ namespace Awful.Console
         static async Task MainAsync(string[] args)
         {
             Directory.CreateDirectory("test");
-            //WebManager webManager = await AuthUserAsync();
+            WebManager webManager = await AuthUserAsync();
+            var thread = await SaveThreadAsync(webManager);
             //var bookmarks = await SaveBookmarksAsync(webManager);
             //var forumCategory = await SaveForumListAsync(webManager);
             //var forum = forumCategory.First().ForumList.First();
@@ -39,7 +40,17 @@ namespace Awful.Console
             System.Console.WriteLine("done");
         }
 
-        static async Task<List<Thread>> SaveBookmarksAsync( WebManager webManager)
+        static async Task<Thread> SaveThreadAsync(WebManager webManager)
+        {
+            ThreadManager threadManager = new ThreadManager(webManager);
+            var result = await threadManager.GetThreadInfoAsync(3847930, true);
+            var thread = JsonConvert.DeserializeObject<Thread>(result.ResultJson);
+            File.WriteAllText("test\\thread.json", result.ResultJson);
+            System.Console.WriteLine("Saved Thread");
+            return thread;
+        }
+
+        static async Task<List<Thread>> SaveBookmarksAsync(WebManager webManager)
         {
             ThreadManager threadManager = new ThreadManager(webManager);
             var result = await threadManager.GetBookmarksAsync(1);

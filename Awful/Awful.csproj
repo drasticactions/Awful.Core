@@ -7,7 +7,7 @@
     <PackageVersion>0.9.1</PackageVersion>
     <Title>Awful</Title>
     <Owners>drasticactions</Owners>
-    <PackageReleaseNotes>Initial Release, rewrote backend parsing and interfaces to make all of the managers consistant.</PackageReleaseNotes>
+    <PackageReleaseNotes>Remove Fody Dependency</PackageReleaseNotes>
     <Copyright>Copyright %28c%29 2018 Drastic Actions</Copyright>
     <PackageProjectUrl>https://github.com/drasticactions/Awful</PackageProjectUrl>
     <PackageLicenseUrl>https://raw.githubusercontent.com/drasticactions/Awful/master/LICENSE.md</PackageLicenseUrl>

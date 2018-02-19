@@ -66,6 +66,8 @@ namespace Awful.Tools
 
         public const string ThreadPage = BaseUrl + "showthread.php?threadid={0}";
 
+        public const string ThreadPageLast = BaseUrl + "showthread.php?threadid={0}&goto=lastpost";
+
         public const string FrontPage = "https://www.somethingawful.com";
 
         public const string SmileUrl = BaseUrl + "misc.php?action=showsmilies";

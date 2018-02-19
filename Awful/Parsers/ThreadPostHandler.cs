@@ -13,6 +13,15 @@ namespace Awful.Parsers
 {
     public class ThreadPostHandler
     {
+        public static void GetThread(Thread thread, string html, string url, string responseUrl)
+        {
+            var doc = new HtmlDocument();
+            doc.LoadHtml(html);
+            CheckPaywall(doc);
+            GetThreadInfo(thread, doc, url, responseUrl);
+            GetThreadPosts(thread.Posts, doc);
+        }
+
         public static void GetThread(ThreadPosts threadPosts, string html, string url, string responseUrl)
         {
             var doc = new HtmlDocument();
@@ -20,6 +29,14 @@ namespace Awful.Parsers
             CheckPaywall(doc);
             GetThreadInfo(threadPosts.ForumThread, doc, url, responseUrl);
             GetThreadPosts(threadPosts.Posts, doc);
+        }
+
+        public static void GetThreadPosts(Thread thread, string html)
+        {
+            var doc = new HtmlDocument();
+            doc.LoadHtml(html);
+            CheckPaywall(doc);
+            GetThreadPosts(thread.Posts, doc);
         }
 
         public static void CheckPaywall(HtmlDocument doc)
@@ -52,7 +69,7 @@ namespace Awful.Parsers
                         .Where(node => node.GetAttributeValue("class", string.Empty) == "bbc-block");
                 foreach (var item in query.ToList())
                 {
-                    var newHeadNode = HtmlNode.CreateNode(item.InnerHtml);
+                    var newHeadNode = HtmlNode.CreateNode(item.OuterHtml);
                     item.ParentNode.ReplaceChild(newHeadNode.ParentNode, item);
                 }
 

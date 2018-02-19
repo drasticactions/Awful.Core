@@ -181,6 +181,25 @@ namespace Awful.Managers
             }
         }
 
+        public async Task<Result> GetThreadInfoAsync(long threadId, bool getLastPagePosts = false)
+        {
+            var result = new Result();
+            try
+            {
+                var url = string.Format(EndPoints.ThreadPageLast, threadId);
+                result = await _webManager.GetDataAsync(url);
+                var thread = new Thread();
+                thread.Posts = new List<Post>();
+                ThreadPostHandler.GetThread(thread, result.ResultHtml, url, result.AbsoluteUri);
+                result.ResultJson = JsonConvert.SerializeObject(thread);
+                return result;
+            }
+            catch (Exception ex)
+            {
+                return ErrorHandler.CreateErrorObject(result, ex.Message, ex.StackTrace);
+            }
+        }
+
         public async Task<Result> GetForumThreadsAsync(Forum forum, int page, bool parseToJson = true)
         {
             return await GetForumThreadsAsync(forum.Location, forum.ForumId, page, parseToJson);
