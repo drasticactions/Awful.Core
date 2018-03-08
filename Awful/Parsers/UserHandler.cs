@@ -116,14 +116,11 @@ namespace Awful.Parsers
 
         public static void ParseNewUserFromPost(User user, HtmlNode postNode)
         {
-            user = new User
-            {
-                Username =
+            user.Username =
                     WebUtility.HtmlDecode(
                         postNode.Descendants("dt")
                             .FirstOrDefault(node => node.GetAttributeValue("class", string.Empty).Contains("author"))
-                            .InnerHtml)
-            };
+                            .InnerHtml);
 
             try
             {
