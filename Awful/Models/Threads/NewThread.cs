@@ -1,9 +1,9 @@
-﻿using Awful.Models.PostIcons;
+﻿using Awful.Parser.Models.PostIcons;
 using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Awful.Models.Threads
+namespace Awful.Parser.Models.Threads
 {
     public class NewThread
     {

@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Net;
-using System.Text;
+﻿using System.Net;
 
-namespace Awful.Models.Web
+namespace Awful.Parser.Models.Web
 {
     public class Result
     {
@@ -70,5 +67,21 @@ namespace Awful.Models.Web
         /// The serialized authentication cookie from logging in.
         /// </summary>
         public CookieContainer AuthenticationCookieContainer { get; set; }
+    }
+
+    public class Error
+    {
+        public Error(string type = "", string reason = "", string stacktrace = "", bool isPaywall = false)
+        {
+            Reason = reason;
+            StackTrace = stacktrace;
+            Type = type;
+            IsPaywall = isPaywall;
+        }
+
+        public string Type { get; set; }
+        public string Reason { get; set; }
+        public string StackTrace { get; set; }
+        public bool IsPaywall { get; set; }
     }
 }

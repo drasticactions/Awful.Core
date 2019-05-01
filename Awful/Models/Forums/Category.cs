@@ -1,8 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Collections.Generic;
+using Newtonsoft.Json;
 
-namespace Awful.Models.Forums
+namespace Awful.Parser.Models.Forums
 {
     public class Category
     {
@@ -14,6 +13,7 @@ namespace Awful.Models.Forums
 
         public int Order { get; set; }
 
-        public List<Forum> ForumList { get; set; }
+        [JsonIgnore]
+        public List<Forum> ForumList { get; set; } = new List<Forum>();
     }
 }

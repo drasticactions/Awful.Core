@@ -1,11 +1,10 @@
-﻿using Awful.Models.Forums;
-using Awful.Models.Posts;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Text;
+using Awful.Parser.Models.Forums;
+using Awful.Parser.Models.Posts;
 
-namespace Awful.Models.Threads
+namespace Awful.Parser.Models.Threads
 {
     public class Thread
     {
@@ -23,11 +22,15 @@ namespace Awful.Models.Threads
 
         public string Author { get; set; }
 
+        public long AuthorId { get; set; }
+
         public int ReplyCount { get; set; }
 
         public int ViewCount { get; set; }
 
-        public int Rating { get; set; }
+        public decimal Rating { get; set; }
+
+        public int TotalRatingVotes { get; set; }
 
         public string RatingImage { get; set; }
 
@@ -35,11 +38,19 @@ namespace Awful.Models.Threads
 
         public string KilledBy { get; set; }
 
+        public long KilledById { get; set; }
+
+        public DateTime KilledOn { get; set; }
+
+        public bool IsArchived { get; set; }
+
         public bool IsSticky { get; set; }
 
         public bool IsNotified { get; set; }
 
         public bool IsLocked { get; set; }
+
+        public bool IsLoggedIn { get; set; }
 
         public bool IsAnnouncement { get; set; }
 
@@ -51,7 +62,7 @@ namespace Awful.Models.Threads
 
         public int TotalPages { get; set; }
 
-        public int CurrentPage { get; set; }
+        public int CurrentPage { get; set; } = 1;
 
         public int ScrollToPost { get; set; }
 
@@ -69,13 +80,15 @@ namespace Awful.Models.Threads
 
         public bool IsBookmark { get; set; }
 
+        public string StarColor { get; set; }
+
         public string Html { get; set; }
 
         public bool IsPrivateMessage { get; set; }
 
         public int OrderNumber { get; set; }
 
-        public List<Post> Posts { get; set; }
+        public List<Post> Posts { get; set; } = new List<Post>();
 
         public Thread Clone()
         {

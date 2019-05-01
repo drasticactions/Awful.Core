@@ -1,33 +1,38 @@
-﻿using System;
+﻿using AngleSharp.Html.Parser;
+using Awful.Parser.Models.Bans;
+using Awful.Parser.Models.Web;
+using Newtonsoft.Json;
+using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
-using Awful.Models.Web;
-using Newtonsoft.Json;
 
-namespace Awful.Managers
+namespace Awful.Parser.Core
 {
-    public class WebManager
+    public class WebClient
     {
-        public WebManager(CookieContainer authenticationCookie = null)
+        public WebClient(CookieContainer authenticationCookie = null)
         {
-            if (authenticationCookie != null) {
+            Parser = new HtmlParser();
+            if (authenticationCookie != null)
+            {
                 CookieContainer = authenticationCookie;
             }
             else
             {
                 CookieContainer = new CookieContainer();
             }
-            var handler = new HttpClientHandler
+            _httpClientHandler = new HttpClientHandler
             {
                 AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate,
                 UseCookies = true,
                 UseDefaultCredentials = false,
                 CookieContainer = CookieContainer
             };
-            Client = new HttpClient(handler);
+            Client = new HttpClient(_httpClientHandler);
             Client.DefaultRequestHeaders.CacheControl = new System.Net.Http.Headers.CacheControlHeaderValue()
             {
                 NoCache = true
@@ -40,10 +45,19 @@ namespace Awful.Managers
             Client.DefaultRequestHeaders.Add("User-Agent", UserAgent);
         }
 
+        public ProbationItem Probation { get; set; } = new ProbationItem();
+
+        public bool IsAuthenticated => CookieContainer != null && CookieContainer.Count > 0;
+
+        public HtmlParser Parser { get; }
+
         public HttpClient Client { get; }
+
+        private readonly HttpClientHandler _httpClientHandler;
+
         public CookieContainer CookieContainer { get; }
 
-    const string Accept = "text/html, application/xhtml+xml, */*";
+        const string Accept = "text/html, application/xhtml+xml, */*";
 
         const string PostContentType = "application/x-www-form-urlencoded";
 
@@ -54,7 +68,8 @@ namespace Awful.Managers
 
         const string UserAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/49.0.2593.0 Safari/537.36";
 
-        public async Task<Result> GetDataAsync(string uri) {
+        public async Task<Result> GetDataAsync(string uri)
+        {
             string html = "";
             try
             {
@@ -74,7 +89,8 @@ namespace Awful.Managers
             }
         }
 
-        public async Task<Result> PostDataAsync(string uri, FormUrlEncodedContent data) {
+        public async Task<Result> PostDataAsync(string uri, FormUrlEncodedContent data)
+        {
             var html = "";
             try
             {
@@ -84,7 +100,7 @@ namespace Awful.Managers
                 using (var reader = new StreamReader(stream, Encoding.GetEncoding("ISO-8859-1")))
                 {
                     html = reader.ReadToEnd();
-                    return new Result(result.IsSuccessStatusCode, html, "", "", result.Headers.Location != null ? result.Headers.Location.OriginalString : "") ;
+                    return new Result(result.IsSuccessStatusCode, html, "", "", result.Headers.Location != null ? result.Headers.Location.OriginalString : "");
                 }
             }
             catch (Exception ex)
@@ -94,7 +110,8 @@ namespace Awful.Managers
             }
         }
 
-        public async Task<Result> PostFormDataAsync(string uri, MultipartFormDataContent form) {
+        public async Task<Result> PostFormDataAsync(string uri, MultipartFormDataContent form)
+        {
             var html = "";
             try
             {
@@ -114,6 +131,14 @@ namespace Awful.Managers
             {
                 var error = new Error("", ex.Message, ex.StackTrace, false);
                 return new Result(false, html, JsonConvert.SerializeObject(error), "", uri);
+            }
+        }
+
+        public void ClearCookies()
+        {
+            foreach (Cookie cookie in _httpClientHandler.CookieContainer.GetCookies(new Uri(EndPoints.BaseUrl)))
+            {
+                cookie.Expired = true;
             }
         }
     }

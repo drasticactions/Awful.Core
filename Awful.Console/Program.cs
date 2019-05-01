@@ -1,20 +1,18 @@
-﻿using Awful.Managers;
-using Awful.Models.Forums;
-using Awful.Models.PostIcons;
-using Awful.Models.Smilies;
-using Awful.Models.Threads;
-using Awful.Models.Users;
+﻿using Awful.Parser.Core;
+using Awful.Parser.Managers;
+using Awful.Parser.Models.Forums;
+using Awful.Parser.Models.PostIcons;
+using Awful.Parser.Models.Threads;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Net;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Awful.Console
+namespace Awful.Core.Console
 {
     class MainClass
     {
@@ -26,126 +24,119 @@ namespace Awful.Console
         static async Task MainAsync(string[] args)
         {
             Directory.CreateDirectory("test");
-            WebManager webManager = await AuthUserAsync();
-            var thread = await SaveThreadAsync(webManager);
-            //var bookmarks = await SaveBookmarksAsync(webManager);
-            //var forumCategory = await SaveForumListAsync(webManager);
+            WebClient WebClient = await AuthUserAsync();
+            //var thread = await SaveThreadAsync(WebClient);
+            //var bookmarks = await SaveBookmarksAsync(WebClient);
+            //var forumCategory = await SaveForumListAsync(WebClient);
             //var forum = forumCategory.First().ForumList.First();
-            //var threads = await SaveThreadListAsync(forum, webManager);
-            //var pmIcons = await SavePMIconsAsync(webManager);
-            //var icons = await SavePostIconAsync(forum.ForumId, webManager);
-            //var smiliesCategories = await SaveSmileCategoriesAsync(webManager);
-            //var profile = await SaveProfileUserAsync(37588, webManager);
-            
+            //var threads = await SaveThreadListAsync(forum, WebClient);
+            //var pmIcons = await SavePMIconsAsync(WebClient);
+            //var icons = await SavePostIconAsync(forum.ForumId, WebClient);
+            //var smiliesCategories = await SaveSmileCategoriesAsync(WebClient);
+            //var profile = await SaveProfileUserAsync(37588, WebClient);
+
             System.Console.WriteLine("done");
         }
 
-        static async Task<Thread> SaveThreadAsync(WebManager webManager)
+        static async Task<Thread> SaveThreadAsync(WebClient WebClient)
         {
-            ThreadManager threadManager = new ThreadManager(webManager);
-            var result = await threadManager.GetThreadInfoAsync(3847930, true);
-            var thread = JsonConvert.DeserializeObject<Thread>(result.ResultJson);
-            File.WriteAllText("test\\thread.json", result.ResultJson);
+            ThreadManager threadManager = new ThreadManager(WebClient);
+            var result = await threadManager.GetThreadAsync(3847930, true);
+            File.WriteAllText("test\\thread.json", JsonConvert.SerializeObject(result));
             System.Console.WriteLine("Saved Thread");
-            return thread;
+            return result;
         }
 
-        static async Task<List<Thread>> SaveBookmarksAsync(WebManager webManager)
+        static async Task<List<Thread>> SaveBookmarksAsync(WebClient WebClient)
         {
-            ThreadManager threadManager = new ThreadManager(webManager);
-            var result = await threadManager.GetBookmarksAsync(1);
-            var threadList = JsonConvert.DeserializeObject<List<Thread>>(result.ResultJson);
-            File.WriteAllText("test\\bookmarks.json", result.ResultJson);
+            BookmarkManager bookmarkManager = new BookmarkManager(WebClient);
+            var result = await bookmarkManager.GetAllBookmarksAsync();
+            File.WriteAllText("test\\bookmarks.json", JsonConvert.SerializeObject(result));
             System.Console.WriteLine("Saved Bookmarks List");
-            return threadList;
+            return result;
         }
 
-        static async Task<List<Thread>> SaveThreadListAsync(Forum forum, WebManager webManager)
+        static async Task<List<Thread>> SaveThreadListAsync(Forum forum, WebClient WebClient)
         {
-            ThreadManager threadManager = new ThreadManager(webManager);
-            var result = await threadManager.GetForumThreadsAsync(forum, 1);
-            var threadList = JsonConvert.DeserializeObject<List<Thread>>(result.ResultJson);
-            File.WriteAllText("test\\threadlist.json", result.ResultJson);
+            ThreadListManager threadManager = new ThreadListManager(WebClient);
+            var result = await threadManager.GetForumThreadListAsync(forum, 1);
+            File.WriteAllText("test\\threadlist.json", JsonConvert.SerializeObject(result));
             System.Console.WriteLine("Saved Thread List");
-            return threadList;
+            return result;
         }
 
-        static async Task<List<PostIcon>> SavePMIconsAsync(WebManager webManager)
+        static async Task<List<PostIcon>> SavePMIconsAsync(WebClient WebClient)
         {
-            PostIconManager postIconManager = new PostIconManager(webManager);
+            PostIconManager postIconManager = new PostIconManager(WebClient);
             var postIconResult = await postIconManager.GetPostIconsAsync(true);
-            var postIcons = JsonConvert.DeserializeObject<List<PostIcon>>(postIconResult.ResultJson);
-            File.WriteAllText("test\\postpmiconlist.json", postIconResult.ResultJson);
+            File.WriteAllText("test\\postpmiconlist.json", JsonConvert.SerializeObject(postIconResult));
             System.Console.WriteLine("Saved PM Icons");
-            return postIcons;
+            return postIconResult;
         }
 
-        static async Task<List<PostIconCategory>> SavePostIconAsync(int forumId, WebManager webManager)
-        {
-            PostIconManager postIconManager = new PostIconManager(webManager);
-            var postIconResult = await postIconManager.GetPostIconsAsync(false, forumId);
-            var postIcons = JsonConvert.DeserializeObject<List<PostIconCategory>>(postIconResult.ResultJson);
-            File.WriteAllText("test\\posticons.json", postIconResult.ResultJson);
-            System.Console.WriteLine("Saved Icons");
-            return postIcons;
-        }
+        //static async Task<List<PostIconCategory>> SavePostIconAsync(int forumId, WebClient WebClient)
+        //{
+        //    PostIconManager postIconManager = new PostIconManager(WebClient);
+        //    var postIconResult = await postIconManager.GetPostIconsAsync(false, forumId);
+        //    File.WriteAllText("test\\posticons.json", postIconResult.ResultJson);
+        //    System.Console.WriteLine("Saved Icons");
+        //    return postIcons;
+        //}
 
-        static async Task<ProfileUser> SaveProfileUserAsync(long profileId, WebManager webManager)
-        {
-            UserManager userManager = new UserManager(webManager);
-            var userResult = await userManager.GetUserFromProfilePageAsync(profileId);
-            var profile = JsonConvert.DeserializeObject<ProfileUser>(userResult.ResultJson);
-            File.WriteAllText("test\\profile.json", userResult.ResultJson);
-            System.Console.WriteLine("Saved Profile");
-            return profile;
-        }
+        //static async Task<ProfileUser> SaveProfileUserAsync(long profileId, WebClient WebClient)
+        //{
+        //    UserManager userManager = new UserManager(WebClient);
+        //    var userResult = await userManager.GetUserFromProfilePageAsync(profileId);
+        //    var profile = JsonConvert.DeserializeObject<ProfileUser>(userResult.ResultJson);
+        //    File.WriteAllText("test\\profile.json", userResult.ResultJson);
+        //    System.Console.WriteLine("Saved Profile");
+        //    return profile;
+        //}
 
-        static async Task<List<SmileCategory>> SaveSmileCategoriesAsync(WebManager webManager)
+        static async Task<List<Awful.Parser.Models.Smilies.SmileCategory>> SaveSmileCategoriesAsync(WebClient WebClient)
         {
-            SmileManager smileManager = new SmileManager(webManager);
+            SmileManager smileManager = new SmileManager(WebClient);
             var smileResult = await smileManager.GetSmileListAsync();
-            var smiliesList = JsonConvert.DeserializeObject<List<SmileCategory>>(smileResult.ResultJson);
-            File.WriteAllText("test\\smilies.json", smileResult.ResultJson);
+            File.WriteAllText("test\\smilies.json", JsonConvert.SerializeObject(smileResult));
             System.Console.WriteLine("Saved Smile List");
-            return smiliesList;
+            return smileResult;
         }
 
-        static async Task<List<Category>> SaveForumListAsync(WebManager webManager)
+        static async Task<List<Category>> SaveForumListAsync(WebClient WebClient)
         {
-            ForumManager forumManager = new ForumManager(webManager);
+            ForumManager forumManager = new ForumManager(WebClient);
             var forumListJson = await forumManager.GetForumCategoriesAsync();
-            var forumCategoryList = JsonConvert.DeserializeObject<List<Category>>(forumListJson.ResultJson);
-            File.WriteAllText("test\\forums.json", forumListJson.ResultJson);
+            File.WriteAllText("test\\forums.json", JsonConvert.SerializeObject(forumListJson));
             System.Console.WriteLine("Saved Forum List");
-            return forumCategoryList;
+            return forumListJson;
         }
 
-        static async Task<WebManager> AuthUserAsync(string username = "", string password = "")
+        static async Task<WebClient> AuthUserAsync(string username = "", string password = "")
         {
             if (!File.Exists("user.cookies"))
             {
                 if (string.IsNullOrEmpty(username) || string.IsNullOrEmpty(password))
                     throw new Exception("You must set the username and password to log in!");
-                var webManager = new WebManager();
-                var authManager = new Managers.AuthenticationManager(webManager);
+                var WebClient = new WebClient();
+                var authManager = new AuthenticationManager(WebClient);
                 var result = await authManager.AuthenticateAsync(username, password);
                 using (FileStream stream = File.Create("user.cookies"))
                 {
                     var formatter = new BinaryFormatter();
                     System.Console.WriteLine("Serializing cookie container");
-                    formatter.Serialize(stream, webManager.CookieContainer);
+                    formatter.Serialize(stream, WebClient.CookieContainer);
                 }
-                return webManager;
+                return WebClient;
             }
             else
             {
-                CookieContainer cookieContainer;
+                System.Net.CookieContainer cookieContainer;
                 using (FileStream stream = File.OpenRead("user.cookies"))
                 {
                     var formatter = new BinaryFormatter();
                     System.Console.WriteLine("Deserializing cookie container");
-                    cookieContainer = (CookieContainer)formatter.Deserialize(stream);
-                    return new WebManager(cookieContainer);
+                    cookieContainer = (System.Net.CookieContainer)formatter.Deserialize(stream);
+                    return new WebClient(cookieContainer);
                 }
             }
         }

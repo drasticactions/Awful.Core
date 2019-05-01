@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Text;
 
-namespace Awful.Tools
+namespace Awful.Parser.Core
 {
     public class EndPoints
     {

@@ -1,9 +1,4 @@
-﻿using Awful.Models.Messages;
-using Awful.Models.PostIcons;
-using Awful.Models.Posts;
-using Awful.Models.Threads;
-using Awful.Models.Web;
-using HtmlAgilityPack;
+﻿using Awful.Parser.Models.Web;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -15,58 +10,19 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
-namespace Awful.Tools
+namespace Awful.Parser.Core
 {
   
-   
-    public class PrivateMessageHandler
-    {
-        public void Parse(PrivateMessage pmEntity, HtmlNode rowNode)
-        {
-            pmEntity.Status =
-                rowNode.Descendants("td")
-                    .FirstOrDefault(node => node.GetAttributeValue("class", string.Empty).Equals("status"))
-                    .Descendants("img")
-                    .FirstOrDefault()
-                    .GetAttributeValue("src", string.Empty);
-
-            var icon = rowNode.Descendants("td")
-                    .FirstOrDefault(node => node.GetAttributeValue("class", string.Empty).Equals("icon"))
-                    .Descendants("img")
-                    .FirstOrDefault();
-
-            if (icon != null)
-            {
-                pmEntity.Icon = new Models.PostIcons.PostIcon() { ImageUrl = icon.GetAttributeValue("src", string.Empty) };
-                pmEntity.ImageIconLocation = Path.GetFileNameWithoutExtension(icon.GetAttributeValue("src", string.Empty));
-            }
-
-            var titleNode = rowNode.Descendants("td")
-                .FirstOrDefault(node => node.GetAttributeValue("class", string.Empty).Equals("title"));
-
-            pmEntity.Title =
-               titleNode
-                    .InnerText.Replace("\n", string.Empty).Trim();
-
-            string titleHref = titleNode.Descendants("a").FirstOrDefault().GetAttributeValue("href", string.Empty).Replace("&amp;", "&");
-
-            pmEntity.MessageUrl = EndPoints.BaseUrl + titleHref;
-
-            pmEntity.Sender = rowNode.Descendants("td")
-                .FirstOrDefault(node => node.GetAttributeValue("class", string.Empty).Equals("sender"))
-                .InnerText;
-            pmEntity.Date = rowNode.Descendants("td")
-                .FirstOrDefault(node => node.GetAttributeValue("class", string.Empty).Equals("date"))
-                .InnerText;
-        }
-    }
-
     public static class ErrorHandler
     {
         public static Result CreateErrorObject(Result result, string reason, string stacktrace, string type = "", bool isPaywall = false)
         {
             result.IsSuccess = false;
             result.Type = typeof(Error).ToString();
+            if (!isPaywall)
+            {
+                isPaywall = reason.Equals("paywall");
+            }
             var error = new Error()
             {
                 Type = type,
@@ -79,7 +35,7 @@ namespace Awful.Tools
         }
     }
 
-    public static class Helpers
+    public static class HtmlHelpers
     {
         public static string HtmlEncode(string text)
         {

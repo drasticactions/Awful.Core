@@ -1,9 +1,9 @@
-﻿using Awful.Models.Users;
+﻿using Awful.Parser.Models.Users;
 using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Awful.Models.Posts
+namespace Awful.Parser.Models.Posts
 {
     public class Post
     {
@@ -32,5 +32,7 @@ namespace Awful.Models.Posts
         public bool HasSeen { get; set; }
 
         public bool IsQuoting { get; set; }
+
+        public bool IsIgnored { get; set; }
     }
 }

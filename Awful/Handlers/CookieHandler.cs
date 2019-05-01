@@ -4,8 +4,10 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Runtime.Serialization;
+using System.Runtime.Serialization.Formatters.Binary;
+using System.Threading.Tasks;
 
-namespace Awful.Tools
+namespace Awful.Parser.Handlers
 {
     public class CookieSerializer
     {
@@ -31,6 +33,29 @@ namespace Awful.Tools
             container.Add(uri, cookieCollection);
             return container;
         }
+    }
 
+    public static class CookieManager
+    {
+        public static CookieContainer LoadCookie(string path)
+        {
+            using (FileStream stream = File.OpenRead(path))
+            {
+                var formatter = new BinaryFormatter();
+                System.Console.WriteLine("Deserializing cookie container");
+                return (CookieContainer)formatter.Deserialize(stream);
+            }
+        }
+
+        public static bool SaveCookie(CookieContainer cookieContainer, string path)
+        {
+            using (FileStream stream = File.Create(path))
+            {
+                var formatter = new BinaryFormatter();
+                System.Console.WriteLine("Serializing cookie container");
+                formatter.Serialize(stream, cookieContainer);
+            }
+            return true;
+        }
     }
 }

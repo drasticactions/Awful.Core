@@ -1,22 +1,21 @@
-﻿using System;
+﻿using Awful.Parser.Core;
+using Awful.Parser.Models.Web;
+using System;
 using System.Collections.Generic;
-using System.Net;
 using System.Net.Http;
+using System.Text;
 using System.Threading.Tasks;
-using Awful.Models.Web;
-using Awful.Tools;
-using Newtonsoft.Json;
 
-namespace Awful.Managers
+namespace Awful.Parser.Managers
 {
     public class AuthenticationManager
     {
-        public AuthenticationManager(WebManager web)
+        public AuthenticationManager(WebClient web)
         {
             webManager = web;
         }
 
-        WebManager webManager;
+        WebClient webManager;
 
         /// <summary>
         /// Authenticate a Something Awful user. This does not use the normal "WebManager" for handling the request
@@ -26,7 +25,8 @@ namespace Awful.Managers
         /// <param name="password">The password of the user.</param>
         /// <param name="checkResult">Check the query string for login errors. Default is True.</param>
         /// <returns>An auth result object.</returns>
-        public async Task<AuthResult> AuthenticateAsync(string username, string password, bool checkResult = true) {
+        public async Task<AuthResult> AuthenticateAsync(string username, string password, bool checkResult = true)
+        {
 
             var dic = new Dictionary<string, string>
             {
@@ -43,7 +43,7 @@ namespace Awful.Managers
                 var location = "http:" + webResult.AbsoluteUri;
                 var uri = new Uri(location);
                 // TODO: Make DAMN sure that the cookie result and web query string are enough checks to verify being logged in.
-                var queryString = Helpers.ParseQueryString(uri.Query);
+                var queryString = HtmlHelpers.ParseQueryString(uri.Query);
                 if (!queryString.ContainsKey("loginerror")) return authResult;
                 if (queryString["loginerror"] == null) return authResult;
                 switch (queryString["loginerror"])

@@ -1,11 +1,11 @@
-﻿using Awful.Models.Posts;
-using Awful.Models.Threads;
+﻿using Awful.Parser.Models.Posts;
+using Awful.Parser.Models.Threads;
 using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Text;
 
-namespace Awful.Models.Replies
+namespace Awful.Parser.Models.Replies
 {
     public class ForumReply
     {

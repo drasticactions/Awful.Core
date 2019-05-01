@@ -1,10 +1,8 @@
-﻿using HtmlAgilityPack;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 
-namespace Awful.Models.Smilies
+namespace Awful.Parser.Models.Smilies
 {
     public class SmileCategory
     {
@@ -13,7 +11,7 @@ namespace Awful.Models.Smilies
             SmileList = new List<Smile>();
         }
 
-        public List<Smile> SmileList { get; set; }
+        public List<Smile> SmileList { get; set; } = new List<Smile>();
 
         public string Name { get; set; }
     }
@@ -23,11 +21,6 @@ namespace Awful.Models.Smilies
         public string Title { get; set; }
 
         public string ImageUrl { get; set; }
-
-        public void Parse(HtmlNode smileNode)
-        {
-            Title = smileNode.Descendants("div").First().InnerText;
-            ImageUrl = smileNode.Descendants("img").First().GetAttributeValue("src", string.Empty);
-        }
+        public string ImageLocation { get; set; }
     }
 }

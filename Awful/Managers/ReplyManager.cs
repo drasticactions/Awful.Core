@@ -1,27 +1,62 @@
-﻿using Awful.Models.Posts;
-using Awful.Models.Replies;
-using Awful.Models.Web;
-using Awful.Tools;
-using Awful.Parsers;
-using HtmlAgilityPack;
-using Newtonsoft.Json;
+﻿using Awful.Parser.Core;
+using Awful.Parser.Handlers;
+using Awful.Parser.Models.Posts;
+using Awful.Parser.Models.Replies;
+using Awful.Parser.Models.Web;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Net;
 using System.Net.Http;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
-namespace Awful.Managers
+namespace Awful.Core.Managers
 {
     public class ReplyManager
     {
-        private readonly WebManager _webManager;
+        private readonly WebClient _webManager;
 
-        public ReplyManager(WebManager webManager)
+        public ReplyManager(WebClient webManager)
         {
             _webManager = webManager;
+        }
+
+        public async Task<ForumReply> GetReplyCookiesForEditAsync(long postId, CancellationToken token = new CancellationToken())
+        {
+            string url = string.Format(EndPoints.EditBase, postId);
+            var result = await _webManager.GetDataAsync(url);
+            var document = await _webManager.Parser.ParseDocumentAsync(result.ResultHtml, token);
+            var inputs = document.QuerySelectorAll("input");
+            var forumReplyEntity = new ForumReply();
+            var bookmarks = inputs["bookmark"].HasAttribute("checked") ? "yes" : "no";
+            string quote = System.Net.WebUtility.HtmlDecode(document.QuerySelector("textarea").TextContent);
+            forumReplyEntity.MapEditPostInformation(
+                quote,
+                postId,
+                bookmarks
+                );
+            return forumReplyEntity;
+        }
+
+        public async Task<ForumReply> GetReplyCookiesAsync(long threadId = 0, long postId = 0, CancellationToken token = new CancellationToken())
+        {
+            if (threadId == 0 && postId == 0) return new ForumReply();
+            string url;
+            url = threadId > 0 ? string.Format(EndPoints.ReplyBase, threadId) : string.Format(EndPoints.QuoteBase, postId);
+            var result = await _webManager.GetDataAsync(url);
+            var document = await _webManager.Parser.ParseDocumentAsync(result.ResultHtml, token);
+            var inputs = document.QuerySelectorAll("input");
+            var posts = ThreadHandler.ParsePreviousPosts(document);
+            var forumReplyEntity = new ForumReply();
+            string quote = System.Net.WebUtility.HtmlDecode(document.QuerySelector("textarea").TextContent);
+            forumReplyEntity.MapThreadInformation(
+                inputs["formkey"].GetAttribute("value"),
+                inputs["form_cookie"].GetAttribute("value"),
+                quote,
+                inputs["threadid"].GetAttribute("value")
+                );
+            forumReplyEntity.ForumPosts = posts;
+            return forumReplyEntity;
         }
 
         public async Task<Result> SendPostAsync(ForumReply forumReplyEntity)
@@ -35,7 +70,7 @@ namespace Awful.Managers
                 {new StringContent(forumReplyEntity.ThreadId), "threadid"},
                 {new StringContent(forumReplyEntity.FormKey), "formkey"},
                 {new StringContent(forumReplyEntity.FormCookie), "form_cookie"},
-                {new StringContent(Helpers.HtmlEncode(forumReplyEntity.Message)), "message"},
+                {new StringContent(HtmlHelpers.HtmlEncode(forumReplyEntity.Message)), "message"},
                 {new StringContent(forumReplyEntity.ParseUrl.ToString()), "parseurl"},
                 {new StringContent("2097152"), "MAX_FILE_SIZE"},
                 {new StringContent("Submit Reply"), "submit"}
@@ -44,9 +79,9 @@ namespace Awful.Managers
 
                 return result;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                return ErrorHandler.CreateErrorObject(result, ex.Message, ex.StackTrace);
+                return result;
             }
         }
 
@@ -59,7 +94,7 @@ namespace Awful.Managers
             {
                 {new StringContent("updatepost"), "action"},
                 {new StringContent(forumReplyEntity.PostId.ToString()), "postid"},
-                {new StringContent(Helpers.HtmlEncode(forumReplyEntity.Message)), "message"},
+                {new StringContent(HtmlHelpers.HtmlEncode(forumReplyEntity.Message)), "message"},
                 {new StringContent(forumReplyEntity.ParseUrl.ToString()), "parseurl"},
                 {new StringContent(forumReplyEntity.Bookmark), "bookmark"},
                 {new StringContent("2097152"), "MAX_FILE_SIZE"},
@@ -68,115 +103,58 @@ namespace Awful.Managers
                 result = await _webManager.PostFormDataAsync(EndPoints.EditPost, form);
                 return result;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                return ErrorHandler.CreateErrorObject(result, ex.Message, ex.StackTrace);
-            }
-        }
-
-        public async Task<Result> CreatePreviewEditPost(ForumReply forumReplyEntity)
-        {
-            var result = new Result();
-            try
-            {
-                var form = new MultipartFormDataContent
-            {
-                {new StringContent("updatepost"), "action"},
-                {new StringContent(forumReplyEntity.PostId.ToString()), "postid"},
-                {new StringContent(Helpers.HtmlEncode(forumReplyEntity.Message)), "message"},
-                {new StringContent(forumReplyEntity.ParseUrl.ToString()), "parseurl"},
-                {new StringContent("2097152"), "MAX_FILE_SIZE"},
-                {new StringContent("Preview Post"), "preview"}
-            };
-                result = await _webManager.PostFormDataAsync(EndPoints.EditPost, form);
-                var post = new Post();
-                ReplyHandler.ParsePostPreview(post, result.ResultHtml);
-                result.ResultJson = JsonConvert.SerializeObject(post);
                 return result;
             }
-            catch (Exception ex)
-            {
-                return ErrorHandler.CreateErrorObject(result, ex.Message, ex.StackTrace);
-            }
         }
 
-        public async Task<Result> CreatePreviewPostAsync(ForumReply forumReplyEntity)
+        public async Task<Post> CreatePreviewPostAsync(ForumReply forumReplyEntity, CancellationToken token = new CancellationToken())
         {
-            var result = new Result();
-            try
-            {
-                var form = new MultipartFormDataContent
+            var form = new MultipartFormDataContent
             {
                 {new StringContent("postreply"), "action"},
                 {new StringContent(forumReplyEntity.ThreadId), "threadid"},
                 {new StringContent(forumReplyEntity.FormKey), "formkey"},
                 {new StringContent(forumReplyEntity.FormCookie), "form_cookie"},
-                {new StringContent(Helpers.HtmlEncode(forumReplyEntity.Message)), "message"},
+                {new StringContent(HtmlHelpers.HtmlEncode(forumReplyEntity.Message)), "message"},
                 {new StringContent(forumReplyEntity.ParseUrl.ToString()), "parseurl"},
                 {new StringContent("2097152"), "MAX_FILE_SIZE"},
                 {new StringContent("Submit Reply"), "submit"},
                 {new StringContent("Preview Reply"), "preview"}
             };
-                // We post to SA the same way we would for a normal reply, but instead of getting a redirect back to the
-                // thread, we'll get redirected to back to the reply screen with the preview message on it.
-                // From here we can parse that preview and return it to the user.
 
-                result = await _webManager.PostFormDataAsync(EndPoints.NewReply, form);
-                var post = new Post();
-                ReplyHandler.ParsePostPreview(post, result.ResultHtml);
-                result.ResultJson = JsonConvert.SerializeObject(post);
-                return result;
-            }
-            catch (Exception ex)
-            {
-                return ErrorHandler.CreateErrorObject(result, ex.Message, ex.StackTrace);
-            }
+            // We post to SA the same way we would for a normal reply, but instead of getting a redirect back to the
+            // thread, we'll get redirected to back to the reply screen with the preview message on it.
+            // From here we can parse that preview and return it to the user.
+
+            var result = await _webManager.PostFormDataAsync(EndPoints.NewReply, form);
+            var document = await _webManager.Parser.ParseDocumentAsync(result.ResultHtml, token);
+            return new Post { PostHtml = document.QuerySelector(".postbody").InnerHtml };
         }
 
-        public async Task<Result> GetReplyCookiesForEdit(long postId)
+        public async Task<Post> CreatePreviewEditPostAsync(ForumReply forumReplyEntity, CancellationToken token = new CancellationToken())
         {
-            var result = new Result();
-            try
+            var form = new MultipartFormDataContent
             {
-                string url = string.Format(EndPoints.EditBase, postId);
-                result = await _webManager.GetDataAsync(url);
-                var forumReplyEntity = new ForumReply();
-                ReplyHandler.ParsePostReply(forumReplyEntity, postId, result.ResultHtml);
-
-                var threadManager = new ThreadManager(_webManager);
-                //Get previous posts from quote page.
-                string url2 = string.Format(EndPoints.QuoteBase, postId);
-                var result2 = await _webManager.GetDataAsync(url2);
-                var forumThreadPosts = new List<Post>();
-                ReplyHandler.ParsePreviousPosts(forumThreadPosts, result.ResultHtml);
-
-                forumReplyEntity.ForumPosts = forumThreadPosts;
-                result.ResultJson = JsonConvert.SerializeObject(forumReplyEntity);
-                return result;
-            }
-            catch (Exception ex)
-            {
-                return ErrorHandler.CreateErrorObject(result, ex.Message, ex.StackTrace);
-            }
+                {new StringContent("updatepost"), "action"},
+                {new StringContent(forumReplyEntity.PostId.ToString()), "postid"},
+                {new StringContent(HtmlHelpers.HtmlEncode(forumReplyEntity.Message)), "message"},
+                {new StringContent(forumReplyEntity.ParseUrl.ToString()), "parseurl"},
+                {new StringContent("2097152"), "MAX_FILE_SIZE"},
+                {new StringContent("Preview Post"), "preview"}
+            };
+            var result = await _webManager.PostFormDataAsync(EndPoints.EditPost, form);
+            var document = await _webManager.Parser.ParseDocumentAsync(result.ResultHtml, token);
+            return new Post { PostHtml = document.QuerySelector(".postbody").InnerHtml };
         }
 
-        public async Task<Result> GetReplyCookies(long threadId = 0, long postId = 0)
+        public async Task<string> GetQuoteStringAsync(long postId, CancellationToken token = new CancellationToken())
         {
-            var result = new Result();
-            try
-            {
-                string url;
-                url = threadId > 0 ? string.Format(EndPoints.ReplyBase, threadId) : string.Format(EndPoints.QuoteBase, postId);
-                result = await _webManager.GetDataAsync(url);
-                var forumReplyEntity = new ForumReply();
-                ReplyHandler.ParseReplyCookies(forumReplyEntity, result.ResultHtml);
-                result.ResultJson = JsonConvert.SerializeObject(forumReplyEntity);
-                return result;
-            }
-            catch (Exception ex)
-            {
-                return ErrorHandler.CreateErrorObject(result, ex.Message, ex.StackTrace);
-            }
+            string url = string.Format(EndPoints.QuoteBase, postId);
+            var result = await _webManager.GetDataAsync(url);
+            var document = await _webManager.Parser.ParseDocumentAsync(result.ResultHtml, token);
+            return System.Net.WebUtility.HtmlDecode(System.Net.WebUtility.HtmlDecode(document.QuerySelector("textarea").TextContent));
         }
     }
 }

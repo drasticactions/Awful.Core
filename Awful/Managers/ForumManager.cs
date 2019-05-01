@@ -1,56 +1,54 @@
-﻿using Awful.Models.Forums;
-using Awful.Models.Web;
-using Awful.Parsers;
-using Awful.Tools;
-using HtmlAgilityPack;
-using Newtonsoft.Json;
+﻿using Awful.Parser.Core;
+using Awful.Parser.Handlers;
+using Awful.Parser.Models.Forums;
+using Awful.Parser.Models.Web;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Net;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
-namespace Awful.Managers
+namespace Awful.Parser.Managers
 {
     public class ForumManager
     {
-        private readonly WebManager _webManager;
+        private readonly WebClient _webManager;
 
-        public ForumManager(WebManager webManager)
+        public ForumManager(WebClient webManager)
         {
             _webManager = webManager;
         }
 
-        public async Task<Result> GetForumCategoriesAsync(bool parseToJson = true)
+        public async Task<List<Category>> GetForumCategoriesViaSelectAsync(CancellationToken token = new CancellationToken())
         {
-            var result = new Result();
-            try
-            {
-                result = await _webManager.GetDataAsync(EndPoints.ForumListPage);
-            }
-            catch (Exception ex)
-            {
-                ErrorHandler.CreateErrorObject(result, "Failed to download forum list", ex.StackTrace, ex.GetType().FullName);
-            }
-            if (!result.IsSuccess) return result;
+            if (!_webManager.IsAuthenticated)
+                throw new Exception("User must be authenticated before using this method.");
+            var result = await _webManager.GetDataAsync(EndPoints.ForumListPage);
+            var document = await _webManager.Parser.ParseDocumentAsync(result.ResultHtml, token);
+            return ForumHandler.ParseCategoryList(document);
+        }
 
-            // Got the forum list HTML!
-            result.Type = typeof(Category).ToString();
+        public async Task<Category> GetForumDescriptionsFromCategoryPageAsync(Category category, CancellationToken token = new CancellationToken())
+        {
+            var result = await _webManager.GetDataAsync(string.Format(EndPoints.ForumPage, category.Id));
+            var document = await _webManager.Parser.ParseDocumentAsync(result.ResultHtml, token);
+            return ForumHandler.ParseForumDescriptions(document, category);
+        }
 
-            if (!parseToJson)
-                return result;
+        public async Task<Forum> GetForumDescriptionsFromForumPageAsync(Forum forum, CancellationToken token = new CancellationToken())
+        {
+            if (forum.SubForums.Count <= 0)
+                return forum;
+            var result = await _webManager.GetDataAsync(string.Format(EndPoints.ForumPage, forum.ForumId));
+            var document = await _webManager.Parser.ParseDocumentAsync(result.ResultHtml, token);
+            return ForumHandler.ParseSubForumDescriptions(document, forum);
+        }
 
-            try
-            {
-                result.ResultJson = JsonConvert.SerializeObject(ForumHandler.ParseCategoryList(result.ResultHtml));
-            }
-            catch (Exception ex)
-            {
-                ErrorHandler.CreateErrorObject(result, "Failed to parse forum list", ex.StackTrace, ex.GetType().FullName);
-            }
-
-            return result;
+        public async Task<List<Category>> GetForumCategoriesAsync(CancellationToken token = new CancellationToken())
+        {
+            var result = await _webManager.GetDataAsync(EndPoints.BaseUrl);
+            var document = await _webManager.Parser.ParseDocumentAsync(result.ResultHtml, token);
+            return ForumHandler.ParseCategoryList(document);
         }
     }
 }

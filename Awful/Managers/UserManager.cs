@@ -1,45 +1,35 @@
-﻿using Awful.Models.Users;
-using Awful.Models.Web;
-using Awful.Parsers;
-using Awful.Tools;
-using Newtonsoft.Json;
+﻿using Awful.Parser.Core;
+using Awful.Parser.Handlers;
+using Awful.Parser.Models.Forums;
+using Awful.Parser.Models.Posts;
+using Awful.Parser.Models.Threads;
+using Awful.Parser.Models.Web;
+using Awful.Parser.Models.Users;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Net;
+using System.Globalization;
+using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
+using System.Threading;
 
-namespace Awful.Managers
+namespace Awful.Parser.Managers
 {
     public class UserManager
     {
-        private readonly WebManager _webManager;
+        private readonly WebClient _webManager;
 
-        public UserManager(WebManager webManager)
+        public UserManager(WebClient webManager)
         {
             _webManager = webManager;
         }
 
-        public async Task<Result> GetUserFromProfilePageAsync(long userId, bool parseToJson = true)
+        public async Task<User> GetUserFromProfilePageAsync(long userId, CancellationToken token = new CancellationToken())
         {
             string url = EndPoints.BaseUrl + string.Format(EndPoints.UserProfile, userId);
             var result = await _webManager.GetDataAsync(url);
-            if (!result.IsSuccess || !parseToJson)
-                return ErrorHandler.CreateErrorObject(result, "Failed to get user", "");
-
-            try
-            {
-                var profileUser = new ProfileUser();
-                UserHandler.ParseFromUserProfile(profileUser, result.ResultHtml);
-                profileUser.Id = userId;
-                result.ResultJson = JsonConvert.SerializeObject(profileUser);
-                return result;
-            }
-            catch (Exception ex)
-            {
-                return ErrorHandler.CreateErrorObject(result, ex.Message, ex.StackTrace);
-            }
+            var document = await _webManager.Parser.ParseDocumentAsync(result.ResultHtml, token);
+            return UserHandler.ParseUserFromProfilePage(userId, document);
         }
     }
 }

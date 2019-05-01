@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Awful.Models.PostIcons
+namespace Awful.Parser.Models.PostIcons
 {
     public class PostIconCategory
     {
@@ -11,9 +11,7 @@ namespace Awful.Models.PostIcons
             List = list;
             Category = category;
         }
-
         public virtual ICollection<PostIcon> List { get; private set; }
-
         public string Category { get; private set; }
     }
 }

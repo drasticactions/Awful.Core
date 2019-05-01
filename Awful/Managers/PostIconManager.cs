@@ -1,43 +1,31 @@
-﻿using Awful.Models.PostIcons;
-using Awful.Models.Web;
-using Awful.Parsers;
-using Awful.Tools;
-using HtmlAgilityPack;
-using Newtonsoft.Json;
+﻿using Awful.Parser.Core;
+using Awful.Parser.Handlers;
+using Awful.Parser.Models.PostIcons;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
-namespace Awful.Managers
+namespace Awful.Parser.Managers
 {
     public class PostIconManager
     {
-        private readonly WebManager _webManager;
+        private readonly WebClient _webManager;
 
-        public PostIconManager(WebManager webManager)
+        public PostIconManager(WebClient webManager)
         {
             _webManager = webManager;
         }
 
-        public async Task<Result> GetPostIconsAsync(bool isPrivateMessage = false, int forumId = 0)
+        public async Task<List<PostIcon>> GetPostIconsAsync(bool isPrivateMessage = false, int forumId = 0, CancellationToken token = new CancellationToken())
         {
-            Result result = new Result();
-            var postIconHandler = new PostIconHandler();
-            try
-            {
-                string url = isPrivateMessage ? EndPoints.NewPrivateMessage : string.Format(EndPoints.NewThread, forumId);
-                result = await _webManager.GetDataAsync(url);
-                var postIconCategoryList = new List<PostIconCategory>();
-                PostIconHandler.Parse(postIconCategoryList, result.ResultHtml);
-                result.ResultJson = JsonConvert.SerializeObject(postIconCategoryList);
-                return result;
-            }
-            catch (Exception ex)
-            {
-                return ErrorHandler.CreateErrorObject(result, ex.Message, ex.StackTrace);
-            }
+            if (!_webManager.IsAuthenticated)
+                throw new Exception("User must be authenticated before using this method.");
+            string url = isPrivateMessage ? EndPoints.NewPrivateMessage : string.Format(EndPoints.NewThread, forumId);
+            var result = await _webManager.GetDataAsync(url);
+            var document = await _webManager.Parser.ParseDocumentAsync(result.ResultHtml, token);
+            return PostIconHandler.ParsePostIconList(document);
         }
     }
 }
