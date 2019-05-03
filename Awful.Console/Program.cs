@@ -3,6 +3,7 @@ using Awful.Parser.Managers;
 using Awful.Parser.Models.Forums;
 using Awful.Parser.Models.PostIcons;
 using Awful.Parser.Models.Threads;
+using Awful.Parser.Models.Users;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -74,24 +75,24 @@ namespace Awful.Core.Console
             return postIconResult;
         }
 
-        //static async Task<List<PostIconCategory>> SavePostIconAsync(int forumId, WebClient WebClient)
-        //{
-        //    PostIconManager postIconManager = new PostIconManager(WebClient);
-        //    var postIconResult = await postIconManager.GetPostIconsAsync(false, forumId);
-        //    File.WriteAllText("test\\posticons.json", postIconResult.ResultJson);
-        //    System.Console.WriteLine("Saved Icons");
-        //    return postIcons;
-        //}
+        static async Task<List<PostIcon>> SavePostIconAsync(int forumId, WebClient WebClient)
+        {
+            PostIconManager postIconManager = new PostIconManager(WebClient);
+            var postIconResult = await postIconManager.GetPostIconsAsync(false, forumId);
+            File.WriteAllText("test\\posticonlist.json", JsonConvert.SerializeObject(postIconResult));
+            System.Console.WriteLine("Saved Icons");
+            return postIconResult;
+        }
 
-        //static async Task<ProfileUser> SaveProfileUserAsync(long profileId, WebClient WebClient)
-        //{
-        //    UserManager userManager = new UserManager(WebClient);
-        //    var userResult = await userManager.GetUserFromProfilePageAsync(profileId);
-        //    var profile = JsonConvert.DeserializeObject<ProfileUser>(userResult.ResultJson);
-        //    File.WriteAllText("test\\profile.json", userResult.ResultJson);
-        //    System.Console.WriteLine("Saved Profile");
-        //    return profile;
-        //}
+        static async Task<User> SaveProfileUserAsync(long profileId, WebClient WebClient)
+        {
+            UserManager userManager = new UserManager(WebClient);
+            var userResult = await userManager.GetUserFromProfilePageAsync(profileId);
+            var profile = JsonConvert.SerializeObject(userResult);
+            File.WriteAllText("test\\profile.json", profile);
+            System.Console.WriteLine("Saved Profile");
+            return userResult;
+        }
 
         static async Task<List<Awful.Parser.Models.Smilies.SmileCategory>> SaveSmileCategoriesAsync(WebClient WebClient)
         {
