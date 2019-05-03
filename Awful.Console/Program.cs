@@ -4,6 +4,7 @@ using Awful.Parser.Models.Forums;
 using Awful.Parser.Models.PostIcons;
 using Awful.Parser.Models.Threads;
 using Awful.Parser.Models.Users;
+using Awful.Web.Templates;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -26,6 +27,7 @@ namespace Awful.Core.Console
         {
             Directory.CreateDirectory("test");
             WebClient WebClient = await AuthUserAsync();
+            await TestTemplate(WebClient);
             //var thread = await SaveThreadAsync(WebClient);
             //var bookmarks = await SaveBookmarksAsync(WebClient);
             //var forumCategory = await SaveForumListAsync(WebClient);
@@ -37,6 +39,14 @@ namespace Awful.Core.Console
             //var profile = await SaveProfileUserAsync(37588, WebClient);
 
             System.Console.WriteLine("done");
+        }
+
+        static async Task TestTemplate(WebClient WebClient)
+        {
+            ThreadManager threadManager = new ThreadManager(WebClient);
+            var result = await threadManager.GetThreadAsync(3847930, true);
+            var post = result.Posts.FirstOrDefault();
+            var template = PostTemplate.Render(post);
         }
 
         static async Task<Thread> SaveThreadAsync(WebClient WebClient)

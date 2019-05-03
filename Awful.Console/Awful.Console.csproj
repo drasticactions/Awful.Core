@@ -52,6 +52,9 @@
     <Reference Include="AngleSharp">
       <HintPath>..\packages\AngleSharp.0.11.0\lib\net46\AngleSharp.dll</HintPath>
     </Reference>
+    <Reference Include="Handlebars">
+      <HintPath>..\packages\Handlebars.Net.1.10.1\lib\net452\Handlebars.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Program.cs" />
@@ -65,6 +68,10 @@
     <ProjectReference Include="..\Awful\Awful.Core.csproj">
       <Project>{DAD85840-AF81-4954-BF7B-73C94DFBC336}</Project>
       <Name>Awful.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Awful.Web\Awful.Web.csproj">
+      <Project>{10E6C643-86F4-47C3-BB9A-27C6917D91BE}</Project>
+      <Name>Awful.Web</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
