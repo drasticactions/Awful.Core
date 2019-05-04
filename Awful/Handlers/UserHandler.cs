@@ -55,9 +55,9 @@ namespace Awful.Parser.Handlers
             user.AvatarHtml = userTitleHtml.InnerHtml;
             user.AvatarTitle = userTitleHtml.TextContent.Trim();
 
-            var userImg = userTitleHtml.QuerySelector(@"img[src*=""avatar""]");
-            if (userImg != null)
-                user.AvatarLink = userImg.GetAttribute("src");
+            var userImgs = userTitleHtml.QuerySelectorAll(@"img");
+            if (userImgs != null && userImgs.Any())
+                user.AvatarLink = userImgs.First().GetAttribute("src");
 
             if (user.AvatarLink == null)
             {
