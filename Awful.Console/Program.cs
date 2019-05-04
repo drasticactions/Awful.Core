@@ -4,7 +4,7 @@ using Awful.Parser.Models.Forums;
 using Awful.Parser.Models.PostIcons;
 using Awful.Parser.Models.Threads;
 using Awful.Parser.Models.Users;
-using Awful.Web.Templates;
+using Awful.Web;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -40,20 +40,21 @@ namespace Awful.Core.Console
 
             System.Console.WriteLine("done");
         }
-
+         
         static async Task TestTemplate(WebClient WebClient)
         {
             ThreadManager threadManager = new ThreadManager(WebClient);
             var result = await threadManager.GetThreadAsync(3847930, true);
-            var post = result.Posts.FirstOrDefault();
-            var template = PostTemplate.Render(post);
+            var test = new ThreadTemplate() { Model = new Web.Templates.ThreadTemplateModel() { Thread = result } };
+            var poop = test.GenerateString();
+            File.WriteAllText("thread.html", poop);
         }
 
         static async Task<Thread> SaveThreadAsync(WebClient WebClient)
         {
             ThreadManager threadManager = new ThreadManager(WebClient);
             var result = await threadManager.GetThreadAsync(3847930, true);
-            File.WriteAllText("test\\thread.json", JsonConvert.SerializeObject(result));
+            File.WriteAllText("thread.json", JsonConvert.SerializeObject(result));
             System.Console.WriteLine("Saved Thread");
             return result;
         }
@@ -62,7 +63,7 @@ namespace Awful.Core.Console
         {
             BookmarkManager bookmarkManager = new BookmarkManager(WebClient);
             var result = await bookmarkManager.GetAllBookmarksAsync();
-            File.WriteAllText("test\\bookmarks.json", JsonConvert.SerializeObject(result));
+            File.WriteAllText("bookmarks.json", JsonConvert.SerializeObject(result));
             System.Console.WriteLine("Saved Bookmarks List");
             return result;
         }
@@ -71,7 +72,7 @@ namespace Awful.Core.Console
         {
             ThreadListManager threadManager = new ThreadListManager(WebClient);
             var result = await threadManager.GetForumThreadListAsync(forum, 1);
-            File.WriteAllText("test\\threadlist.json", JsonConvert.SerializeObject(result));
+            File.WriteAllText("threadlist.json", JsonConvert.SerializeObject(result));
             System.Console.WriteLine("Saved Thread List");
             return result;
         }
@@ -80,7 +81,7 @@ namespace Awful.Core.Console
         {
             PostIconManager postIconManager = new PostIconManager(WebClient);
             var postIconResult = await postIconManager.GetPostIconsAsync(true);
-            File.WriteAllText("test\\postpmiconlist.json", JsonConvert.SerializeObject(postIconResult));
+            File.WriteAllText("postpmiconlist.json", JsonConvert.SerializeObject(postIconResult));
             System.Console.WriteLine("Saved PM Icons");
             return postIconResult;
         }
@@ -89,7 +90,7 @@ namespace Awful.Core.Console
         {
             PostIconManager postIconManager = new PostIconManager(WebClient);
             var postIconResult = await postIconManager.GetPostIconsAsync(false, forumId);
-            File.WriteAllText("test\\posticonlist.json", JsonConvert.SerializeObject(postIconResult));
+            File.WriteAllText("posticonlist.json", JsonConvert.SerializeObject(postIconResult));
             System.Console.WriteLine("Saved Icons");
             return postIconResult;
         }
@@ -99,7 +100,7 @@ namespace Awful.Core.Console
             UserManager userManager = new UserManager(WebClient);
             var userResult = await userManager.GetUserFromProfilePageAsync(profileId);
             var profile = JsonConvert.SerializeObject(userResult);
-            File.WriteAllText("test\\profile.json", profile);
+            File.WriteAllText("profile.json", profile);
             System.Console.WriteLine("Saved Profile");
             return userResult;
         }
@@ -108,7 +109,7 @@ namespace Awful.Core.Console
         {
             SmileManager smileManager = new SmileManager(WebClient);
             var smileResult = await smileManager.GetSmileListAsync();
-            File.WriteAllText("test\\smilies.json", JsonConvert.SerializeObject(smileResult));
+            File.WriteAllText("smilies.json", JsonConvert.SerializeObject(smileResult));
             System.Console.WriteLine("Saved Smile List");
             return smileResult;
         }
@@ -117,7 +118,7 @@ namespace Awful.Core.Console
         {
             ForumManager forumManager = new ForumManager(WebClient);
             var forumListJson = await forumManager.GetForumCategoriesAsync();
-            File.WriteAllText("test\\forums.json", JsonConvert.SerializeObject(forumListJson));
+            File.WriteAllText("forums.json", JsonConvert.SerializeObject(forumListJson));
             System.Console.WriteLine("Saved Forum List");
             return forumListJson;
         }
