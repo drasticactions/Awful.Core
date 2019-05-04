@@ -155,7 +155,7 @@ WriteLiteral(">\r\n                            Joined ");
 
 
 #line 24 "ThreadTemplate.html"
-                              Write(post.User.DateJoined);
+                              Write(post.User.DateJoined.ToString("d"));
 
 
 #line default

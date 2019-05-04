@@ -19,6 +19,10 @@ namespace Awful.Parser.Handlers
 
             post.HasSeen = doc.QuerySelector(@"[class=""seen1""]") != null || doc.QuerySelector(@"[class=""seen2""]") != null;
 
+
+            var postDate = doc.QuerySelector(@"td[class=""postdate""]");
+            if (postDate != null)
+                post.PostDate = postDate.Text().Replace("\n", "").Replace("#", "").Replace("?", "");
             var threadBody = doc.QuerySelector(".postbody");
             if (threadBody != null)
             {
