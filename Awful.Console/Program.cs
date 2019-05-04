@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
 using System.Threading.Tasks;
@@ -45,7 +46,8 @@ namespace Awful.Core.Console
         {
             ThreadManager threadManager = new ThreadManager(WebClient);
             var result = await threadManager.GetThreadAsync(3847930, true);
-            var test = new ThreadTemplate() { Model = new Web.Templates.ThreadTemplateModel() { Thread = result } };
+            var css = Awful.Web.CSS.Themes.GetCSS(Web.CSS.Themes.BaseCSS);
+            var test = new ThreadTemplate() { Model = new Web.Templates.ThreadTemplateModel() { Thread = result, Css = css } };
             var poop = test.GenerateString();
             File.WriteAllText("thread.html", poop);
         }

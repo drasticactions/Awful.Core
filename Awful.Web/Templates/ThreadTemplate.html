@@ -6,10 +6,15 @@
         <meta content="text/html; charset=utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <title>@Model.Thread.Name</title>
+        <style>
+            @{
+                WriteLiteral(Model.Css);
+            }
+        </style>
     </head>
     <body>
         @foreach (var post in Model.Thread.Posts) {
-        <div id="@post.PostId">
+        <post id="@post.PostId">
             <header id="userid-@post.User.Id">
                 @if(post.User.AvatarLink != "") {
                     <img class="avatar" src="@post.User.AvatarLink" alt="">
@@ -20,9 +25,9 @@
                             @post.User.Username
                         </h1>
 
-                        <span class="regdate">
+                        <date class="regdate">
                             Joined @post.User.DateJoined.ToString("d")
-                        </span>
+                        <date/>
                     </section>
                 </section>
             </header>
@@ -36,7 +41,7 @@
                     @post.PostDate
                 </span>
             </footer>
-        </div>
+        </post>
         }
     </body>
 </html>

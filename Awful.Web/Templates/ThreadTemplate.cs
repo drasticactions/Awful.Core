@@ -51,26 +51,42 @@ WriteLiteral(" />\n        <title>");
 
 #line default
 #line hidden
-WriteLiteral("</title>\n    </head>\n    <body>\r\n");
+WriteLiteral("</title>\n        <style>\r\n");
 
 
-#line 11 "ThreadTemplate.html"
+#line 10 "ThreadTemplate.html"
+            
+
+#line default
+#line hidden
+
+#line 10 "ThreadTemplate.html"
+              
+                WriteLiteral(Model.Css);
+            
+
+#line default
+#line hidden
+WriteLiteral("\n        </style>\n    </head>\n    <body>\r\n");
+
+
+#line 16 "ThreadTemplate.html"
         
 
 #line default
 #line hidden
 
-#line 11 "ThreadTemplate.html"
+#line 16 "ThreadTemplate.html"
          foreach (var post in Model.Thread.Posts) {
 
 
 #line default
 #line hidden
-WriteLiteral("        <div");
+WriteLiteral("        <post");
 
 WriteAttribute ("id", " id=\"", "\""
 
-#line 12 "ThreadTemplate.html"
+#line 17 "ThreadTemplate.html"
 , Tuple.Create<string,object,bool> ("", post.PostId
 
 #line default
@@ -82,7 +98,7 @@ WriteLiteral(">\r\n            <header");
 WriteAttribute ("id", " id=\"", "\""
 , Tuple.Create<string,object,bool> ("", "userid-", true)
 
-#line 13 "ThreadTemplate.html"
+#line 18 "ThreadTemplate.html"
 , Tuple.Create<string,object,bool> ("", post.User.Id
 
 #line default
@@ -92,13 +108,13 @@ WriteAttribute ("id", " id=\"", "\""
 WriteLiteral(">\r\n");
 
 
-#line 14 "ThreadTemplate.html"
+#line 19 "ThreadTemplate.html"
                 
 
 #line default
 #line hidden
 
-#line 14 "ThreadTemplate.html"
+#line 19 "ThreadTemplate.html"
                  if(post.User.AvatarLink != "") {
 
 
@@ -110,7 +126,7 @@ WriteLiteral(" class=\"avatar\"");
 
 WriteAttribute ("src", " src=\"", "\""
 
-#line 15 "ThreadTemplate.html"
+#line 20 "ThreadTemplate.html"
       , Tuple.Create<string,object,bool> ("", post.User.AvatarLink
 
 #line default
@@ -122,7 +138,7 @@ WriteLiteral(" alt=\"\"");
 WriteLiteral(">\r\n");
 
 
-#line 16 "ThreadTemplate.html"
+#line 21 "ThreadTemplate.html"
                 }
 
 
@@ -141,26 +157,26 @@ WriteLiteral(">\r\n");
 WriteLiteral("                            ");
 
 
-#line 20 "ThreadTemplate.html"
+#line 25 "ThreadTemplate.html"
                        Write(post.User.Username);
 
 
 #line default
 #line hidden
-WriteLiteral("\r\n                        </h1>\r\n\r\n                        <span");
+WriteLiteral("\r\n                        </h1>\r\n\r\n                        <date");
 
 WriteLiteral(" class=\"regdate\"");
 
 WriteLiteral(">\r\n                            Joined ");
 
 
-#line 24 "ThreadTemplate.html"
+#line 29 "ThreadTemplate.html"
                               Write(post.User.DateJoined.ToString("d"));
 
 
 #line default
 #line hidden
-WriteLiteral("\r\n                        </span>\r\n                    </section>\n               " +
+WriteLiteral("\r\n                        <date/>\r\n                    </section>\n               " +
 " </section>\r\n            </header>\r\n            <div");
 
 WriteLiteral(" class=\"postbody\"");
@@ -168,13 +184,13 @@ WriteLiteral(" class=\"postbody\"");
 WriteLiteral(">\r\n");
 
 
-#line 30 "ThreadTemplate.html"
+#line 35 "ThreadTemplate.html"
                 
 
 #line default
 #line hidden
 
-#line 30 "ThreadTemplate.html"
+#line 35 "ThreadTemplate.html"
                   
                 WriteLiteral(post.PostHtml);
                 
@@ -190,16 +206,16 @@ WriteLiteral(">\r\n");
 WriteLiteral("                    ");
 
 
-#line 36 "ThreadTemplate.html"
+#line 41 "ThreadTemplate.html"
                Write(post.PostDate);
 
 
 #line default
 #line hidden
-WriteLiteral("\r\n                </span>\r\n            </footer>\r\n        </div>\r\n");
+WriteLiteral("\r\n                </span>\r\n            </footer>\r\n        </post>\r\n");
 
 
-#line 40 "ThreadTemplate.html"
+#line 45 "ThreadTemplate.html"
         }
 
 

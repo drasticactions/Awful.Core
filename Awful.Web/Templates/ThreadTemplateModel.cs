@@ -12,5 +12,7 @@ namespace Awful.Web.Templates
         }
 
         public Thread Thread { get; set; }
+
+        public string Css { get; set; }
     }
 }

@@ -22,10 +22,21 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <None Remove="CSS\base-thread.css" />
+  </ItemGroup>
+  <ItemGroup>
     <None Include="Templates\ThreadTemplate.html">
       <Generator>RazorTemplatePreprocessor</Generator>
       <CustomToolNamespace>Awful.Web</CustomToolNamespace>
       <LastGenOutput>ThreadTemplate.cs</LastGenOutput>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="CSS\base-thread.css">
+      <LogicalName>Awful.Web.Templates.base-thread.css</LogicalName>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="CSS\" />
   </ItemGroup>
 </Project>
