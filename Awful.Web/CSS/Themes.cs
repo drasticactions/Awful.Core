@@ -6,7 +6,7 @@ namespace Awful.Web.CSS
 {
     public class Themes
     {
-        public static string BaseCSS = "Awful.Web.Templates.base-thread.css";
+        public static string BaseCSS = "Awful.Web.Templates.posts-view.css";
 
         public static string GetCSS(string resourceName)
         {

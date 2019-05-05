@@ -45,7 +45,7 @@ namespace Awful.Core.Console
         static async Task TestTemplate(WebClient WebClient)
         {
             ThreadManager threadManager = new ThreadManager(WebClient);
-            var result = await threadManager.GetThreadAsync(3847930, true);
+            var result = await threadManager.GetThreadAsync(3606621, true);
             var css = Awful.Web.CSS.Themes.GetCSS(Web.CSS.Themes.BaseCSS);
             var test = new ThreadTemplate() { Model = new Web.Templates.ThreadTemplateModel() { Thread = result, Css = css } };
             var poop = test.GenerateString();

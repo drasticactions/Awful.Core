@@ -32,20 +32,91 @@ post {
     margin-top: 0.5em;
 }
 
-post header,
-post .postbody {
-    padding-left: 1.07em;
-    padding-right: 1.07em;
+@media only screen and (max-width: 768px) {
+
+    .youtube-player {
+        width: 100%;
+        height: 315px;
+        margin: 0 auto;
+    }
+
+    post header,
+    post .postbody {
+        padding-left: 0.6em;
+        padding-right: 0.6em;
+    }
+
+    post footer {
+        padding-left: 0.6em;
+    }
+
+    post .action-button {
+        padding-right: 0.6em;
+    }
+
+    .avatar {
+        max-width: 2.5em;
+        max-height: 2.5em;
+    }
+
+    .postbody ol,
+    .postbody ul {
+        margin: 0;
+        padding-left: 1.5em;
+    }
+
+    #ad {
+        padding: 0.6em;
+        padding-bottom: 0;
+    }
+
 }
 
-post footer {
-    padding-left: 1.07em;
-}
+@media only screen and (min-width: 769px) {
+    .youtube-player {
+        width: 640px;
+        height: 360px;
+        margin: 0 auto;
+    }
 
-post .action-button {
-    padding-right: 1.07em;
-}
+    post header,
+    post .postbody {
+        padding-left: 1.07em;
+        padding-right: 1.07em;
+    }
 
+    post footer {
+        padding-left: 1.07em;
+    }
+
+    post .action-button {
+        padding-right: 1.07em;
+    }
+
+    header {
+        padding-top: 1.22em;
+    }
+
+    .avatar {
+        max-width: 4em;
+        max-height: 4em;
+    }
+
+    .bbc-block {
+        margin: 0 10px 1em 10px;
+    }
+
+
+    #fyad-flag img {
+        display: block;
+        margin: 0 auto;
+    }
+
+    #ad {
+        padding: 1.07em;
+        padding-bottom: 0;
+    }
+}
 post:first-child {
     margin-top: 0;
 }
@@ -53,10 +124,6 @@ post:first-child {
 header {
     padding-top: 0.75em;
     padding-bottom: 0.7em;
-}
-
-header {
-    padding-top: 1.22em;
 }
 
 header:after {
@@ -68,11 +135,6 @@ header:after {
 .avatar {
     display: inline-block;
     vertical-align: middle;
-}
-
-.avatar {
-    max-width: 4em;
-    max-height: 4em;
 }
 
 .nameanddate {
@@ -185,9 +247,6 @@ header:after {
     padding: 0 10px 5px;
 }
 
-.bbc-block {
-    margin: 0 10px 1em 10px;
-}
 
 .bbc-block h4 {
     margin: 0;
@@ -300,6 +359,7 @@ blockquote {
     content: "\200C";
 }
 
+
 .bbc-block.code pre {
     margin: 0;
 }
@@ -334,10 +394,6 @@ footer {
         border: 1px solid black;
     }
 
-#fyad-flag img {
-    display: block;
-    margin: 0 auto;
-}
 
 #ad {
     text-align: center;
@@ -347,10 +403,8 @@ footer {
         max-width: 100%;
     }
 
-#ad {
-    padding: 1.07em;
-    padding-bottom: 0;
-}
+
+
 
 #end {
     font-weight: normal;

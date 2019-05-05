@@ -32,8 +32,8 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="CSS\base-thread.css">
-      <LogicalName>Awful.Web.Templates.base-thread.css</LogicalName>
+    <EmbeddedResource Include="CSS\posts-view.css">
+      <LogicalName>Awful.Web.Templates.posts-view.css</LogicalName>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
