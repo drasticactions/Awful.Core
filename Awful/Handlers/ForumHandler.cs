@@ -92,6 +92,66 @@ namespace Awful.Parser.Handlers
         }
 
         /// <summary>
+        /// Parses the HTML of the Something Awful Forums front page for the forum groups.
+        /// </summary>
+        /// <param name="html">SA Front Page HTML</param>
+        /// <param name="parser">AngleSharp HtmlParser</param>
+        /// <returns>SA Forums Group List</returns>
+        public static List<ForumGroup> ParseForumGroupList(IHtmlDocument document)
+        {
+            var forumSelector = document.All.FirstOrDefault(m => m.LocalName == "table" && m.Id == "forums");
+            if (forumSelector == null)
+            {
+                throw new FormatException("Could not find Forums table in given HTML");
+            }
+            var categories = new List<Category>();
+            var forumGroup = new List<ForumGroup>();
+            List<Forum> forums = new List<Forum>();
+            var rows = forumSelector.QuerySelectorAll("tr");
+            var order = 1;
+            var innerOrder = 1;
+            
+            foreach (var row in rows)
+            {
+                if (row.ClassName == "section")
+                {
+                    if (categories.Any())
+                    {
+                        var lastCategory = categories.Last();
+                        forumGroup.Add(new ForumGroup(lastCategory, forums));
+                        forums = new List<Forum>();
+                    }
+                    var category = GetCategoryFromLink(row, order);
+                    categories.Add(category);
+                    order++;
+                    innerOrder = 1;
+                }
+                else
+                {
+                    var selectedCatagory = categories.Last();
+                    var forum = GetForumFromLink(row, innerOrder, selectedCatagory.Id);
+                    innerOrder++;
+                    selectedCatagory.ForumList.Add(forum);
+                    forums.Add(forum);
+                    var subForumList = row.QuerySelector(".subforums");
+                    if (subForumList == null)
+                        continue;
+                    var subForumListLinks = subForumList.QuerySelectorAll("a");
+                    foreach (var subForumLink in subForumListLinks)
+                    {
+                        var subForum = GetSubForumFromLink(subForumLink, innerOrder, selectedCatagory.Id);
+                        subForum.ParentForumId = forum.ForumId;
+                        forum.SubForums.Add(subForum);
+                        forums.Add(forum);
+                        innerOrder++;
+                    }
+                }
+            }
+
+            return forumGroup;
+        }
+
+        /// <summary>
         /// Get Forum Page Info
         /// </summary>
         /// <param name="doc"></param>
