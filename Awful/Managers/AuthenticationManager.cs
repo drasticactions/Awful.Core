@@ -40,7 +40,7 @@ namespace Awful.Parser.Managers
                 var webResult = await webManager.PostDataAsync(EndPoints.LoginUrl, header);
                 var authResult = new AuthResult(webManager.CookieContainer, webResult.IsSuccess);
                 if (string.IsNullOrEmpty(webResult.AbsoluteUri)) return authResult;
-                var location = "http:" + webResult.AbsoluteUri;
+                var location = webResult.AbsoluteUri.StartsWith("\\") ? "http:" + webResult.AbsoluteUri : webResult.AbsoluteUri;
                 var uri = new Uri(location);
                 // TODO: Make DAMN sure that the cookie result and web query string are enough checks to verify being logged in.
                 var queryString = HtmlHelpers.ParseQueryString(uri.Query);

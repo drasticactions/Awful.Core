@@ -100,7 +100,9 @@ namespace Awful.Parser.Core
                 using (var reader = new StreamReader(stream, Encoding.GetEncoding("ISO-8859-1")))
                 {
                     html = reader.ReadToEnd();
-                    return new Result(result.IsSuccessStatusCode, html, "", "", result.Headers.Location != null ? result.Headers.Location.OriginalString : "");
+                    var returnUrl = result.Headers.Location != null ? result.Headers.Location.OriginalString : "";
+                    if (string.IsNullOrEmpty(returnUrl)) returnUrl = result.RequestMessage.RequestUri != null ? result.RequestMessage.RequestUri.ToString() : "";
+                    return new Result(result.IsSuccessStatusCode, html, "", "", returnUrl);
                 }
             }
             catch (Exception ex)

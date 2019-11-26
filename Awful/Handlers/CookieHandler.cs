@@ -57,5 +57,11 @@ namespace Awful.Parser.Handlers
             }
             return true;
         }
+
+        public static bool RemoveCookie (string path)
+        {
+            System.IO.File.Delete(path);
+            return true;
+        }
     }
 }
