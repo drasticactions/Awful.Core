@@ -23,6 +23,7 @@ namespace Awful.Parser.Handlers
                     var image = smile.QuerySelector("img").GetAttribute("src");
                     smileCategory.SmileList.Add(new Smile()
                     {
+                        Category = smileCategory.Name,
                         Title = smile.TextContent.Trim(),
                         ImageUrl = image,
                         ImageLocation = Path.GetFileNameWithoutExtension(image)
