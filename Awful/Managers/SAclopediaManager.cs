@@ -27,11 +27,11 @@ namespace Awful.Parser.Managers
             return SAclopediaHandler.ParseCategoryList(document);
         }
 
-        public async Task<List<SAclopediaEntryItem>> GetEntryItemListAsync(int id, CancellationToken token = new CancellationToken())
+        public async Task<List<SAclopediaEntryItem>> GetEntryItemListAsync(int id, int act = 5, CancellationToken token = new CancellationToken())
         {
             if (!_webManager.IsAuthenticated)
                 throw new Exception("User must be authenticated before using this method.");
-            var result = await _webManager.GetDataAsync(EndPoints.SAclopediaBase + $"?act=5&i={id}", token);
+            var result = await _webManager.GetDataAsync(EndPoints.SAclopediaBase + $"?act={act}&i={id}", token);
             var document = await _webManager.Parser.ParseDocumentAsync(result.ResultHtml, token);
             return SAclopediaHandler.ParseEntryItemList(document);
         }
