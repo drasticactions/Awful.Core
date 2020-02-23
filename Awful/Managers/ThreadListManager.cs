@@ -23,7 +23,7 @@ namespace Awful.Parser.Managers
         public async Task<List<Thread>> GetForumThreadListAsync(Forum forum, int page, CancellationToken token = new CancellationToken())
         {
             var pageUrl = string.Format(EndPoints.ForumPage, forum.ForumId) + string.Format(EndPoints.PageNumber, page);
-            var result = await _webManager.GetDataAsync(pageUrl);
+            var result = await _webManager.GetDataAsync(pageUrl, token);
             var document = await _webManager.Parser.ParseDocumentAsync(result.ResultHtml, token);
             ForumHandler.GetForumPageInfo(document, forum);
             return ThreadHandler.ParseForumThreadList(document, forum.ForumId);

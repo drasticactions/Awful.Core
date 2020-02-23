@@ -23,7 +23,7 @@ namespace Awful.Parser.Managers
             if (!_webManager.IsAuthenticated)
                 throw new Exception("User must be authenticated before using this method.");
             string url = isPrivateMessage ? EndPoints.NewPrivateMessage : string.Format(EndPoints.NewThread, forumId);
-            var result = await _webManager.GetDataAsync(url);
+            var result = await _webManager.GetDataAsync(url, token);
             var document = await _webManager.Parser.ParseDocumentAsync(result.ResultHtml, token);
             return PostIconHandler.ParsePostIconList(document);
         }

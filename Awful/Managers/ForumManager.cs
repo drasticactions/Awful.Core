@@ -23,14 +23,14 @@ namespace Awful.Parser.Managers
         {
             if (!_webManager.IsAuthenticated)
                 throw new Exception("User must be authenticated before using this method.");
-            var result = await _webManager.GetDataAsync(EndPoints.ForumListPage);
+            var result = await _webManager.GetDataAsync(EndPoints.ForumListPage, token);
             var document = await _webManager.Parser.ParseDocumentAsync(result.ResultHtml, token);
             return ForumHandler.ParseCategoryList(document);
         }
 
         public async Task<Category> GetForumDescriptionsFromCategoryPageAsync(Category category, CancellationToken token = new CancellationToken())
         {
-            var result = await _webManager.GetDataAsync(string.Format(EndPoints.ForumPage, category.Id));
+            var result = await _webManager.GetDataAsync(string.Format(EndPoints.ForumPage, category.Id, token));
             var document = await _webManager.Parser.ParseDocumentAsync(result.ResultHtml, token);
             return ForumHandler.ParseForumDescriptions(document, category);
         }
@@ -39,14 +39,14 @@ namespace Awful.Parser.Managers
         {
             if (forum.SubForums.Count <= 0)
                 return forum;
-            var result = await _webManager.GetDataAsync(string.Format(EndPoints.ForumPage, forum.ForumId));
+            var result = await _webManager.GetDataAsync(string.Format(EndPoints.ForumPage, forum.ForumId, token));
             var document = await _webManager.Parser.ParseDocumentAsync(result.ResultHtml, token);
             return ForumHandler.ParseSubForumDescriptions(document, forum);
         }
 
         public async Task<List<Category>> GetForumCategoriesAsync(CancellationToken token = new CancellationToken())
         {
-            var result = await _webManager.GetDataAsync(EndPoints.BaseUrl);
+            var result = await _webManager.GetDataAsync(EndPoints.BaseUrl, token);
             var document = await _webManager.Parser.ParseDocumentAsync(result.ResultHtml, token);
             return ForumHandler.ParseCategoryList(document);
         }

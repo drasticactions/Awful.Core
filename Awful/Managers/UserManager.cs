@@ -27,7 +27,7 @@ namespace Awful.Parser.Managers
         public async Task<User> GetUserFromProfilePageAsync(long userId, CancellationToken token = new CancellationToken())
         {
             string url = EndPoints.BaseUrl + string.Format(EndPoints.UserProfile, userId);
-            var result = await _webManager.GetDataAsync(url);
+            var result = await _webManager.GetDataAsync(url, token);
             var document = await _webManager.Parser.ParseDocumentAsync(result.ResultHtml, token);
             return UserHandler.ParseUserFromProfilePage(userId, document);
         }

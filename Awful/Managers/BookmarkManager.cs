@@ -22,7 +22,7 @@ namespace Awful.Parser.Managers
             _webManager = webManager;
         }
 
-        public async Task<List<Models.Threads.Thread>> GetAllBookmarksAsync()
+        public async Task<List<Models.Threads.Thread>> GetAllBookmarksAsync(CancellationToken token = new CancellationToken())
         {
             if (!_webManager.IsAuthenticated)
                 throw new Exception("User must be authenticated before using this method.");
@@ -30,7 +30,7 @@ namespace Awful.Parser.Managers
             var page = 1;
             while (true)
             {
-                var threads = await GetBookmarkListAsync(page);
+                var threads = await GetBookmarkListAsync(page, token);
                 if (!threads.Any())
                     break;
                 threadList.AddRange(threads);
@@ -46,12 +46,12 @@ namespace Awful.Parser.Managers
             string url = EndPoints.BookmarksUrl;
             if (page >= 0)
                 url = EndPoints.BookmarksUrl + string.Format(EndPoints.PageNumber, page);
-            var result = await _webManager.GetDataAsync(url);
+            var result = await _webManager.GetDataAsync(url, token);
             var document = await _webManager.Parser.ParseDocumentAsync(result.ResultHtml, token);
             return ThreadHandler.ParseForumThreadList(document, 0);
         }
 
-        public async Task<Result> AddBookmarkAsync(long threadId)
+        public async Task<Result> AddBookmarkAsync(long threadId, CancellationToken token = new CancellationToken())
         {
             try
             {
@@ -62,7 +62,7 @@ namespace Awful.Parser.Managers
                     ["threadid"] = threadId.ToString()
                 };
                 var header = new FormUrlEncodedContent(dic);
-                return await _webManager.PostDataAsync(EndPoints.Bookmark, header);
+                return await _webManager.PostDataAsync(EndPoints.Bookmark, header, token);
             }
             catch (Exception ex)
             {
@@ -70,7 +70,7 @@ namespace Awful.Parser.Managers
             }
         }
 
-        public async Task<Result> RemoveBookmarkAsync(long threadId)
+        public async Task<Result> RemoveBookmarkAsync(long threadId, CancellationToken token = new CancellationToken())
         {
             var dic = new Dictionary<string, string>
             {
@@ -79,7 +79,7 @@ namespace Awful.Parser.Managers
                 ["threadid"] = threadId.ToString()
             };
             var header = new FormUrlEncodedContent(dic);
-            return await _webManager.PostDataAsync(EndPoints.Bookmark, header);
+            return await _webManager.PostDataAsync(EndPoints.Bookmark, header, token);
         }
     }
 }

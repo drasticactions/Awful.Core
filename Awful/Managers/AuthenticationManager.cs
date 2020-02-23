@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Awful.Parser.Managers
@@ -25,7 +26,7 @@ namespace Awful.Parser.Managers
         /// <param name="password">The password of the user.</param>
         /// <param name="checkResult">Check the query string for login errors. Default is True.</param>
         /// <returns>An auth result object.</returns>
-        public async Task<AuthResult> AuthenticateAsync(string username, string password, bool checkResult = true)
+        public async Task<AuthResult> AuthenticateAsync(string username, string password, bool checkResult = true, CancellationToken token = new CancellationToken())
         {
 
             var dic = new Dictionary<string, string>
@@ -37,7 +38,7 @@ namespace Awful.Parser.Managers
             var header = new FormUrlEncodedContent(dic);
             try
             {
-                var webResult = await webManager.PostDataAsync(EndPoints.LoginUrl, header);
+                var webResult = await webManager.PostDataAsync(EndPoints.LoginUrl, header, token);
                 var authResult = new AuthResult(webManager.CookieContainer, webResult.IsSuccess);
                 if (string.IsNullOrEmpty(webResult.AbsoluteUri)) return authResult;
                 var location = webResult.AbsoluteUri.StartsWith("\\") ? "http:" + webResult.AbsoluteUri : webResult.AbsoluteUri;

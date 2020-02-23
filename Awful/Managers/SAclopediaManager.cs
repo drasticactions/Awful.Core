@@ -22,7 +22,7 @@ namespace Awful.Parser.Managers
         {
             if (!_webManager.IsAuthenticated)
                 throw new Exception("User must be authenticated before using this method.");
-            var result = await _webManager.GetDataAsync(EndPoints.SAclopediaBase);
+            var result = await _webManager.GetDataAsync(EndPoints.SAclopediaBase, token);
             var document = await _webManager.Parser.ParseDocumentAsync(result.ResultHtml, token);
             return SAclopediaHandler.ParseCategoryList(document);
         }
@@ -31,16 +31,16 @@ namespace Awful.Parser.Managers
         {
             if (!_webManager.IsAuthenticated)
                 throw new Exception("User must be authenticated before using this method.");
-            var result = await _webManager.GetDataAsync(EndPoints.SAclopediaBase + $"?act=5&i={id}");
+            var result = await _webManager.GetDataAsync(EndPoints.SAclopediaBase + $"?act=5&i={id}", token);
             var document = await _webManager.Parser.ParseDocumentAsync(result.ResultHtml, token);
             return SAclopediaHandler.ParseEntryItemList(document);
         }
 
-        public async Task<SAclopediaEntry> GetEntryAsync(int id, CancellationToken token = new CancellationToken())
+        public async Task<SAclopediaEntry> GetEntryAsync(int id, int act = 3, CancellationToken token = new CancellationToken())
         {
             if (!_webManager.IsAuthenticated)
                 throw new Exception("User must be authenticated before using this method.");
-            var result = await _webManager.GetDataAsync(EndPoints.SAclopediaBase + $"?act=3&topicid={id}");
+            var result = await _webManager.GetDataAsync(EndPoints.SAclopediaBase + $"?act={act}& topicid={id}", token);
             var document = await _webManager.Parser.ParseDocumentAsync(result.ResultHtml, token);
             return SAclopediaHandler.ParseEntry(document, id);
         }

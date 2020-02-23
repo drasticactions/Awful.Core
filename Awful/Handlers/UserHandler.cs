@@ -14,8 +14,22 @@ namespace Awful.Parser.Handlers
 
             var authorTd = doc.QuerySelector(@"[class*=""userinfo""]");
             ParseUserInfoElement(user, authorTd);
-
+            // If we're trying to get the current user,
+            // get the real ID from the page.
+            if (userId == 0)
+                ParseUserId(user, doc);
             return user;
+        }
+
+        public static void ParseUserId (User user, IHtmlDocument doc)
+        {
+            var input = doc.QuerySelector(@"input[name=""userid""]");
+            if (input != null)
+            {
+                var inputNum = input.GetAttribute("value");
+                if (!string.IsNullOrEmpty(inputNum))
+                    user.Id = Convert.ToInt64(inputNum);
+            }
         }
 
         public static User ParseUserFromPost(IElement doc)
@@ -69,6 +83,11 @@ namespace Awful.Parser.Handlers
             var gangTagImg = userTitleHtml.QuerySelector(@"img[src*=""gangtags""]");
             if (gangTagImg != null)
                 user.AvatarGangTagLink = gangTagImg.GetAttribute("src");
+
+            if (user.Id == 0)
+            {
+
+            }
         }
     }
 }

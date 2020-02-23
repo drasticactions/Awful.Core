@@ -8,6 +8,7 @@ using System.IO;
 using System.Net;
 using System.Net.Http;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Awful.Parser.Core
@@ -68,13 +69,13 @@ namespace Awful.Parser.Core
 
         const string UserAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/49.0.2593.0 Safari/537.36";
 
-        public async Task<Result> GetDataAsync(string uri)
+        public async Task<Result> GetDataAsync(string uri, CancellationToken token = new CancellationToken())
         {
             string html = "";
             try
             {
                 Client.DefaultRequestHeaders.IfModifiedSince = DateTimeOffset.UtcNow;
-                var result = await Client.GetAsync(new Uri(uri));
+                var result = await Client.GetAsync(new Uri(uri), token);
                 var stream = await result.Content.ReadAsStreamAsync();
                 using (var reader = new StreamReader(stream, Encoding.GetEncoding("ISO-8859-1")))
                 {
@@ -89,7 +90,7 @@ namespace Awful.Parser.Core
             }
         }
 
-        public async Task<Result> PostDataAsync(string uri, FormUrlEncodedContent data)
+        public async Task<Result> PostDataAsync(string uri, FormUrlEncodedContent data, CancellationToken token = new CancellationToken())
         {
             var html = "";
             try
@@ -112,7 +113,7 @@ namespace Awful.Parser.Core
             }
         }
 
-        public async Task<Result> PostFormDataAsync(string uri, MultipartFormDataContent form)
+        public async Task<Result> PostFormDataAsync(string uri, MultipartFormDataContent form, CancellationToken token = new CancellationToken())
         {
             var html = "";
             try

@@ -24,7 +24,7 @@ namespace Awful.Core.Managers
         public async Task<ForumReply> GetReplyCookiesForEditAsync(long postId, CancellationToken token = new CancellationToken())
         {
             string url = string.Format(EndPoints.EditBase, postId);
-            var result = await _webManager.GetDataAsync(url);
+            var result = await _webManager.GetDataAsync(url, token);
             var document = await _webManager.Parser.ParseDocumentAsync(result.ResultHtml, token);
             var inputs = document.QuerySelectorAll("input");
             var forumReplyEntity = new ForumReply();
@@ -43,7 +43,7 @@ namespace Awful.Core.Managers
             if (threadId == 0 && postId == 0) return new ForumReply();
             string url;
             url = threadId > 0 ? string.Format(EndPoints.ReplyBase, threadId) : string.Format(EndPoints.QuoteBase, postId);
-            var result = await _webManager.GetDataAsync(url);
+            var result = await _webManager.GetDataAsync(url, token);
             var document = await _webManager.Parser.ParseDocumentAsync(result.ResultHtml, token);
             var inputs = document.QuerySelectorAll("input");
             var posts = ThreadHandler.ParsePreviousPosts(document);
@@ -59,7 +59,7 @@ namespace Awful.Core.Managers
             return forumReplyEntity;
         }
 
-        public async Task<Result> SendPostAsync(ForumReply forumReplyEntity)
+        public async Task<Result> SendPostAsync(ForumReply forumReplyEntity, CancellationToken token = new CancellationToken())
         {
             var result = new Result();
             try
@@ -75,7 +75,7 @@ namespace Awful.Core.Managers
                 {new StringContent("2097152"), "MAX_FILE_SIZE"},
                 {new StringContent("Submit Reply"), "submit"}
             };
-                result = await _webManager.PostFormDataAsync(EndPoints.NewReply, form);
+                result = await _webManager.PostFormDataAsync(EndPoints.NewReply, form, token);
 
                 return result;
             }
@@ -85,7 +85,7 @@ namespace Awful.Core.Managers
             }
         }
 
-        public async Task<Result> SendUpdatePostAsync(ForumReply forumReplyEntity)
+        public async Task<Result> SendUpdatePostAsync(ForumReply forumReplyEntity, CancellationToken token = new CancellationToken())
         {
             var result = new Result();
             try
@@ -100,7 +100,7 @@ namespace Awful.Core.Managers
                 {new StringContent("2097152"), "MAX_FILE_SIZE"},
                 {new StringContent("Save Changes"), "submit"}
             };
-                result = await _webManager.PostFormDataAsync(EndPoints.EditPost, form);
+                result = await _webManager.PostFormDataAsync(EndPoints.EditPost, form, token);
                 return result;
             }
             catch (Exception)
@@ -144,7 +144,7 @@ namespace Awful.Core.Managers
                 {new StringContent("2097152"), "MAX_FILE_SIZE"},
                 {new StringContent("Preview Post"), "preview"}
             };
-            var result = await _webManager.PostFormDataAsync(EndPoints.EditPost, form);
+            var result = await _webManager.PostFormDataAsync(EndPoints.EditPost, form, token);
             var document = await _webManager.Parser.ParseDocumentAsync(result.ResultHtml, token);
             return new Post { PostHtml = document.QuerySelector(".postbody").InnerHtml };
         }
@@ -152,7 +152,7 @@ namespace Awful.Core.Managers
         public async Task<string> GetQuoteStringAsync(long postId, CancellationToken token = new CancellationToken())
         {
             string url = string.Format(EndPoints.QuoteBase, postId);
-            var result = await _webManager.GetDataAsync(url);
+            var result = await _webManager.GetDataAsync(url, token);
             var document = await _webManager.Parser.ParseDocumentAsync(result.ResultHtml, token);
             return System.Net.WebUtility.HtmlDecode(System.Net.WebUtility.HtmlDecode(document.QuerySelector("textarea").TextContent));
         }

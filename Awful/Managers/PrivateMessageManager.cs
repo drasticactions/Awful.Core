@@ -23,7 +23,7 @@ namespace Awful.Parser.Managers
             _webManager = webManager;
         }
 
-        public async Task<List<PrivateMessage>> GetAllPrivateMessageListAsync()
+        public async Task<List<PrivateMessage>> GetAllPrivateMessageListAsync(CancellationToken token = new CancellationToken())
         {
             if (!_webManager.IsAuthenticated)
                 throw new Exception("User must be authenticated before using this method.");
@@ -31,7 +31,7 @@ namespace Awful.Parser.Managers
             var page = 0;
             while (true)
             {
-                var result = await GetPrivateMessageListAsync(page);
+                var result = await GetPrivateMessageListAsync(page, token);
                 pmList.AddRange(result);
                 if (!result.Any())
                     break;
@@ -51,17 +51,17 @@ namespace Awful.Parser.Managers
                 url = EndPoints.PrivateMessages + string.Format(EndPoints.PageNumber, page);
             }
 
-            var result = await _webManager.GetDataAsync(url);
+            var result = await _webManager.GetDataAsync(url, token);
             var document = await _webManager.Parser.ParseDocumentAsync(result.ResultHtml, token);
             return PrivateMessageHandler.ParseList(document);
         }
 
-        public async Task<Post> GetPrivateMessageAsync(int id)
+        public async Task<Post> GetPrivateMessageAsync(int id, CancellationToken token = new CancellationToken())
         {
             if (!_webManager.IsAuthenticated)
                 throw new Exception("User must be authenticated before using this method.");
             var pm = new PrivateMessage() { Id = id };
-            await GetPrivateMessageAsync(pm);
+            await GetPrivateMessageAsync(pm, token);
             return pm.Post;
         }
 
@@ -69,13 +69,13 @@ namespace Awful.Parser.Managers
         {
             if (!_webManager.IsAuthenticated)
                 throw new Exception("User must be authenticated before using this method.");
-            var result = await _webManager.GetDataAsync(EndPoints.PrivateMessages + $"?action=show&privatemessageid={message.Id}");
+            var result = await _webManager.GetDataAsync(EndPoints.PrivateMessages + $"?action=show&privatemessageid={message.Id}", token);
             var document = await _webManager.Parser.ParseDocumentAsync(result.ResultHtml, token);
             message.Post = PostHandler.ParsePost(document, document.Body);
             return message.Post;
         }
 
-        public async Task<Result> SendPrivateMessageAsync(NewPrivateMessage newPrivateMessageEntity)
+        public async Task<Result> SendPrivateMessageAsync(NewPrivateMessage newPrivateMessageEntity, CancellationToken token = new CancellationToken())
         {
             if (!_webManager.IsAuthenticated)
                 throw new Exception("User must be authenticated before using this method.");
@@ -106,7 +106,7 @@ namespace Awful.Parser.Managers
             try
             {
 
-                result = await _webManager.PostFormDataAsync(EndPoints.NewPrivateMessageBase, form);
+                result = await _webManager.PostFormDataAsync(EndPoints.NewPrivateMessageBase, form, token);
                 return result;
             }
             catch (Exception ex)
