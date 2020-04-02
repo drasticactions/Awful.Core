@@ -10,24 +10,23 @@ variables:
   buildConfiguration: 'Release'
 
 steps:
-- task: NuGetToolInstaller@1
-
-- task: NuGetCommand@2
+- task: UseDotNet@2
+  displayName: 'Install .NET Core SDK'
   inputs:
-    restoreSolution: '$(solution)'
-
-- task: VSBuild@1
+    version: 3.1.x
+    performMultiLevelLookup: true
+- task: DotNetCoreCLI@2
   inputs:
-    solution: '$(solution)'
-    platform: '$(buildPlatform)'
-    configuration: '$(buildConfiguration)'
-
-- task: VSTest@2
+    command: restore
+    projects: '**/*.csproj'
+- task: DotNetCoreCLI@2
+  displayName: Build
   inputs:
-    testSelector: 'testAssemblies'
-    testAssemblyVer2: |
-      **\*Test*.dll
-      !**\*TestAdapter.dll
-      !**\obj\**
-    searchFolder: '$(System.DefaultWorkingDirectory)'
-    otherConsoleOptions: '/Framework:".NETCoreApp,Version=v3.1"'
+    command: build
+    projects: '**/*.csproj'
+    arguments: '--configuration Release'
+- task: DotNetCoreCLI@2
+  inputs:
+    command: test
+    projects: '**/*Tests/*.csproj'
+    arguments: '--configuration $(buildConfiguration)'
