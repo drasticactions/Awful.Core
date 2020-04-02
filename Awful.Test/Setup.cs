@@ -17,9 +17,9 @@ namespace Awful.Test
             var password = Environment.GetEnvironmentVariable("AWFUL_PASSWORD");
             if (!File.Exists("user.cookies"))
             {
-                if (string.IsNullOrEmpty(username) || string.IsNullOrEmpty(password))
-                    throw new Exception("You must set the username and password to log in!");
                 var WebClient = new WebClient();
+                if (string.IsNullOrEmpty(username) || string.IsNullOrEmpty(password))
+                    return WebClient;
                 var authManager = new AuthenticationManager(WebClient);
                 var result = await authManager.AuthenticateAsync(username, password);
                 if (!result.IsSuccess)
@@ -30,6 +30,7 @@ namespace Awful.Test
                     System.Console.WriteLine("Serializing cookie container");
                     formatter.Serialize(stream, WebClient.CookieContainer);
                 }
+
                 return WebClient;
             }
             else
