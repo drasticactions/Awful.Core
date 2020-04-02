@@ -16,6 +16,7 @@ steps:
     version: 3.1.x
     performMultiLevelLookup: true
 - task: DotNetCoreCLI@2
+  displayName: 'Restore NuGets'
   inputs:
     command: restore
     projects: '**/*.csproj'
@@ -26,7 +27,8 @@ steps:
     projects: '**/*.csproj'
     arguments: '--configuration Release'
 - task: DotNetCoreCLI@2
+  displayName: 'Tests'
   inputs:
     command: test
-    projects: '**/*Tests/*.csproj'
+    projects: 'Awful.Test/*.csproj'
     arguments: '--configuration $(buildConfiguration)'
