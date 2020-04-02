@@ -3,6 +3,7 @@ using Awful.Parser.Core;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -18,13 +19,30 @@ namespace Awful.Core.Managers.JSON
             _webManager = webManager;
         }
 
-        public async Task<IndexPage> GetIndexPageAsync (CancellationToken token = new CancellationToken())
+        public async Task<IndexPage> GetIndexPageAsync (bool addAdditionalMetadata = false, CancellationToken token = new CancellationToken())
         {
             var result = await _webManager.GetDataAsync(EndPoints.IndexPageUrl, token);
             if (!result.IsSuccess)
                 throw new Exception("Could not get Index page JSON");
 
-            return JsonConvert.DeserializeObject<IndexPage>(result.ResultHtml);
+            if (!addAdditionalMetadata)
+                return JsonConvert.DeserializeObject<IndexPage>(result.ResultHtml);
+
+            var data = JsonConvert.DeserializeObject<IndexPage>(result.ResultHtml);
+
+            foreach (var forum in data.Forums)
+                UpdateForumMetadata(forum);
+
+            return data;
+        }
+
+        private void UpdateForumMetadata (Forum forum, Forum parentForum = null)
+        {
+            if (parentForum != null)
+                forum.ParentId = parentForum.Id;
+
+            foreach (var subForum in forum.SubForums)
+                UpdateForumMetadata(subForum, forum);
         }
     }
 }

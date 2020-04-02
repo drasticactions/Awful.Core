@@ -25,6 +25,8 @@ namespace Awful.Core.Models.JSON
         [JsonProperty("id")]
         public long Id { get; set; }
 
+        public long ParentId { get; set; }
+
         [JsonProperty("title")]
         public string Title { get; set; }
 
