@@ -5,11 +5,9 @@ VisualStudioVersion = 16.0.29515.123
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Awful.Core", "Awful\Awful.Core.csproj", "{DAD85840-AF81-4954-BF7B-73C94DFBC336}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Awful.Console", "Awful.Console\Awful.Console.csproj", "{73E40729-CDE6-4174-9073-6AE94301BB96}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Awful.Web", "Awful.Web\Awful.Web.csproj", "{10E6C643-86F4-47C3-BB9A-27C6917D91BE}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Awful.Test", "Awful.Test\Awful.Test.csproj", "{9B14B69F-A0AB-4113-850C-D874F7DD9AE5}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Awful.Test", "Awful.Test\Awful.Test.csproj", "{9B14B69F-A0AB-4113-850C-D874F7DD9AE5}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,10 +19,6 @@ Global
 		{DAD85840-AF81-4954-BF7B-73C94DFBC336}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DAD85840-AF81-4954-BF7B-73C94DFBC336}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DAD85840-AF81-4954-BF7B-73C94DFBC336}.Release|Any CPU.Build.0 = Release|Any CPU
-		{73E40729-CDE6-4174-9073-6AE94301BB96}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{73E40729-CDE6-4174-9073-6AE94301BB96}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{73E40729-CDE6-4174-9073-6AE94301BB96}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{73E40729-CDE6-4174-9073-6AE94301BB96}.Release|Any CPU.Build.0 = Release|Any CPU
 		{10E6C643-86F4-47C3-BB9A-27C6917D91BE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{10E6C643-86F4-47C3-BB9A-27C6917D91BE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{10E6C643-86F4-47C3-BB9A-27C6917D91BE}.Release|Any CPU.ActiveCfg = Release|Any CPU
