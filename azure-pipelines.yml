@@ -30,3 +30,4 @@ steps:
       !**\*TestAdapter.dll
       !**\obj\**
     searchFolder: '$(System.DefaultWorkingDirectory)'
+    otherConsoleOptions: '/Framework:".NETCoreApp,Version=v3.1"'
