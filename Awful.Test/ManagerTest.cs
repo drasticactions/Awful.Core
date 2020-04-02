@@ -1,3 +1,4 @@
+using Awful.Core.Managers.JSON;
 using Awful.Parser.Core;
 using Awful.Parser.Managers;
 using System;
@@ -14,6 +15,15 @@ namespace Awful.Test
         public ManagerTest ()
         {
             WebClient = Setup.SetupWebClient().Result;
+        }
+
+        [Fact]
+        public async Task GetIndexPageAsync_Test()
+        {
+            IndexPageManager indexManager = new IndexPageManager(WebClient);
+            var result = await indexManager.GetIndexPageAsync();
+            Assert.NotNull(result);
+            Assert.True(result.Forums.Any());
         }
 
         [Fact]

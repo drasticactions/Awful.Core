@@ -93,5 +93,7 @@ namespace Awful.Parser.Core
         public const string SearchUrl = BaseUrl + "query.php";
 
         public const string BookmarksUrl = BaseUrl + "bookmarkthreads.php?perage=40&sortorder=desc&sortfield=";
+
+        public const string IndexPageUrl = BaseUrl + "index.php?json=1";
     }
 }
