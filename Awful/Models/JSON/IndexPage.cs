@@ -17,7 +17,7 @@ namespace Awful.Core.Models.JSON
         public User User { get; set; }
 
         [JsonProperty("forums")]
-        public List<Forum> Forums { get; set; }
+        public List<Forum> Forums { get; set; } = new List<Forum>();
     }
 
     public partial class Forum
@@ -40,10 +40,10 @@ namespace Awful.Core.Models.JSON
         public string Icon { get; set; }
 
         [JsonProperty("sub_forums")]
-        public List<Forum> SubForums { get; set; }
+        public List<Forum> SubForums { get; set; } = new List<Forum>();
 
         [JsonProperty("moderators")]
-        public List<Moderator> Moderators { get; set; }
+        public List<Moderator> Moderators { get; set; } = new List<Moderator>();
     }
 
     public partial class Moderator
