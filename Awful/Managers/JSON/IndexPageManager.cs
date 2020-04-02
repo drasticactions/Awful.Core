@@ -41,6 +41,9 @@ namespace Awful.Core.Managers.JSON
             if (parentForum != null)
                 forum.ParentId = parentForum.Id;
 
+            if (forum.SubForums == null)
+                return;
+
             foreach (var subForum in forum.SubForums)
                 UpdateForumMetadata(subForum, forum);
         }
