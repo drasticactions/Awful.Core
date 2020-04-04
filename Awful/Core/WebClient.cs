@@ -1,13 +1,13 @@
 ﻿using AngleSharp.Html.Parser;
 using Awful.Parser.Models.Bans;
 using Awful.Parser.Models.Web;
-using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Net.Http;
 using System.Text;
+using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -86,7 +86,7 @@ namespace Awful.Parser.Core
             catch (Exception ex)
             {
                 var error = new Error("", ex.Message, ex.StackTrace, false);
-                return new Result(false, html, JsonConvert.SerializeObject(error), "", uri);
+                return new Result(false, html, JsonSerializer.Serialize(error), "", uri);
             }
         }
 
@@ -109,7 +109,7 @@ namespace Awful.Parser.Core
             catch (Exception ex)
             {
                 var error = new Error("", ex.Message, ex.StackTrace, false);
-                return new Result(false, html, JsonConvert.SerializeObject(error), "", uri);
+                return new Result(false, html, JsonSerializer.Serialize(error), "", uri);
             }
         }
 
@@ -133,7 +133,7 @@ namespace Awful.Parser.Core
             catch (Exception ex)
             {
                 var error = new Error("", ex.Message, ex.StackTrace, false);
-                return new Result(false, html, JsonConvert.SerializeObject(error), "", uri);
+                return new Result(false, html, JsonSerializer.Serialize(error), "", uri);
             }
         }
 

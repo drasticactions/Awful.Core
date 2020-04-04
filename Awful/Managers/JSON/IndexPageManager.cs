@@ -1,6 +1,7 @@
 ﻿using Awful.Core.Models.JSON;
 using Awful.Parser.Core;
-using Newtonsoft.Json;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -26,9 +27,9 @@ namespace Awful.Core.Managers.JSON
                 throw new Exception("Could not get Index page JSON");
 
             if (!addAdditionalMetadata)
-                return JsonConvert.DeserializeObject<IndexPage>(result.ResultHtml);
+                return JsonSerializer.Deserialize<IndexPage>(result.ResultHtml);
 
-            var data = JsonConvert.DeserializeObject<IndexPage>(result.ResultHtml);
+            var data = JsonSerializer.Deserialize<IndexPage>(result.ResultHtml);
 
             foreach (var forum in data.Forums)
                 UpdateForumMetadata(forum);

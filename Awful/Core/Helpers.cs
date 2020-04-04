@@ -1,5 +1,4 @@
 ﻿using Awful.Parser.Models.Web;
-using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -9,6 +8,8 @@ using System.Net.Http;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace Awful.Parser.Core
 {
@@ -30,7 +31,7 @@ namespace Awful.Parser.Core
                 StackTrace = stacktrace,
                 IsPaywall = isPaywall
             };
-            result.ResultJson = JsonConvert.SerializeObject(error);
+            result.ResultJson = JsonSerializer.Serialize(error);
             return result;
         }
     }

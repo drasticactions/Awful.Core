@@ -2,146 +2,146 @@
 using System.Collections.Generic;
 
 using System.Globalization;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace Awful.Core.Models.JSON
 {
 
     public partial class IndexPage
     {
-        [JsonProperty("stats")]
+        [JsonPropertyName("stats")]
         public Stats Stats { get; set; }
 
-        [JsonProperty("user")]
+        [JsonPropertyName("user")]
         public User User { get; set; }
 
-        [JsonProperty("forums")]
+        [JsonPropertyName("forums")]
         public List<Forum> Forums { get; set; }
     }
 
     public partial class Forum
     {
-        [JsonProperty("id")]
+        [JsonPropertyName("id")]
         public long Id { get; set; }
 
         public long ParentId { get; set; }
 
-        [JsonProperty("title")]
+        [JsonPropertyName("title")]
         public string Title { get; set; }
 
-        [JsonProperty("title_short")]
+        [JsonPropertyName("title_short")]
         public string TitleShort { get; set; }
 
-        [JsonProperty("has_threads")]
+        [JsonPropertyName("has_threads")]
         public bool HasThreads { get; set; }
 
-        [JsonProperty("icon")]
+        [JsonPropertyName("icon")]
         public string Icon { get; set; }
 
-        [JsonProperty("sub_forums")]
+        [JsonPropertyName("sub_forums")]
         public List<Forum> SubForums { get; set; }
 
-        [JsonProperty("moderators")]
+        [JsonPropertyName("moderators")]
         public List<Moderator> Moderators { get; set; }
     }
 
     public partial class Moderator
     {
-        [JsonProperty("userid")]
+        [JsonPropertyName("userid")]
         public long Userid { get; set; }
 
-        [JsonProperty("username")]
+        [JsonPropertyName("username")]
         public string Username { get; set; }
     }
 
     public partial class Stats
     {
-        [JsonProperty("archived_posts")]
+        [JsonPropertyName("archived_posts")]
         public long ArchivedPosts { get; set; }
 
-        [JsonProperty("archived_threads")]
+        [JsonPropertyName("archived_threads")]
         public long ArchivedThreads { get; set; }
 
-        [JsonProperty("banned_users")]
+        [JsonPropertyName("banned_users")]
         public long BannedUsers { get; set; }
 
-        [JsonProperty("banned_users_total")]
+        [JsonPropertyName("banned_users_total")]
         public long BannedUsersTotal { get; set; }
 
-        [JsonProperty("online_registered")]
+        [JsonPropertyName("online_registered")]
         public long OnlineRegistered { get; set; }
 
-        [JsonProperty("online_total")]
+        [JsonPropertyName("online_total")]
         public long OnlineTotal { get; set; }
 
-        [JsonProperty("unique_posts")]
+        [JsonPropertyName("unique_posts")]
         public long UniquePosts { get; set; }
 
-        [JsonProperty("unique_threads")]
+        [JsonPropertyName("unique_threads")]
         public long UniqueThreads { get; set; }
 
-        [JsonProperty("usercount")]
+        [JsonPropertyName("usercount")]
         public long Usercount { get; set; }
     }
 
     public partial class User
     {
-        [JsonProperty("userid")]
+        [JsonPropertyName("userid")]
         public long Userid { get; set; }
 
-        [JsonProperty("username")]
+        [JsonPropertyName("username")]
         public string Username { get; set; }
 
-        [JsonProperty("homepage")]
+        [JsonPropertyName("homepage")]
         public string Homepage { get; set; }
 
-        [JsonProperty("icq")]
+        [JsonPropertyName("icq")]
         public string Icq { get; set; }
 
-        [JsonProperty("aim")]
+        [JsonPropertyName("aim")]
         public string Aim { get; set; }
 
-        [JsonProperty("yahoo")]
+        [JsonPropertyName("yahoo")]
         public string Yahoo { get; set; }
 
-        [JsonProperty("gender")]
+        [JsonPropertyName("gender")]
         public string Gender { get; set; }
 
-        [JsonProperty("usertitle")]
+        [JsonPropertyName("usertitle")]
         public string Usertitle { get; set; }
 
-        [JsonProperty("joindate")]
+        [JsonPropertyName("joindate")]
         public long Joindate { get; set; }
 
-        [JsonProperty("lastpost")]
+        [JsonPropertyName("lastpost")]
         public long Lastpost { get; set; }
 
-        [JsonProperty("posts")]
+        [JsonPropertyName("posts")]
         public long Posts { get; set; }
 
-        [JsonProperty("receivepm")]
+        [JsonPropertyName("receivepm")]
         public long Receivepm { get; set; }
 
-        [JsonProperty("postsperday")]
+        [JsonPropertyName("postsperday")]
         public double Postsperday { get; set; }
 
-        [JsonProperty("role")]
+        [JsonPropertyName("role")]
         public string Role { get; set; }
 
-        [JsonProperty("biography")]
+        [JsonPropertyName("biography")]
         public string Biography { get; set; }
 
-        [JsonProperty("location")]
+        [JsonPropertyName("location")]
         public string Location { get; set; }
 
-        [JsonProperty("interests")]
+        [JsonPropertyName("interests")]
         public string Interests { get; set; }
 
-        [JsonProperty("occupation")]
+        [JsonPropertyName("occupation")]
         public string Occupation { get; set; }
 
-        [JsonProperty("picture")]
+        [JsonPropertyName("picture")]
         public string Picture { get; set; }
     }
 }
