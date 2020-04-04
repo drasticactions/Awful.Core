@@ -37,6 +37,35 @@ namespace Awful.Core.Managers.JSON
             return data;
         }
 
+        public async Task<List<Forum>> GetForumListAsync(CancellationToken token = new CancellationToken())
+        {
+            var result = await _webManager.GetDataAsync(EndPoints.IndexPageUrl, token);
+            if (!result.IsSuccess)
+                throw new Exception("Could not get Index page JSON");
+
+            var data = JsonSerializer.Deserialize<IndexPage>(result.ResultHtml);
+
+            foreach (var forum in data.Forums)
+                UpdateForumMetadata(forum);
+
+            var forums = data.Forums.SelectMany(n => Flatten(n)).ToList();
+            for (int i = 0; i < forums.Count; i++)
+                forums[i].SortOrder = i + 1;
+
+            return forums;
+        }
+
+        private IEnumerable<Forum> Flatten(Forum forum)
+        {
+            yield return forum;
+            if (forum.SubForums != null)
+            {
+                foreach (var child in forum.SubForums)
+                    foreach (var descendant in Flatten(child))
+                        yield return descendant;
+            }
+        }
+
         private void UpdateForumMetadata (Forum forum, Forum parentForum = null)
         {
             if (parentForum != null)

@@ -18,6 +18,15 @@ namespace Awful.Test
         }
 
         [Fact]
+        public async Task GetForumListAsync_Test()
+        {
+            IndexPageManager indexManager = new IndexPageManager(WebClient);
+            var result = await indexManager.GetForumListAsync();
+            Assert.NotNull(result);
+            Assert.True(result.Any());
+        }
+
+        [Fact]
         public async Task GetIndexPageAsyncWithMetadata_Test()
         {
             IndexPageManager indexManager = new IndexPageManager(WebClient);
