@@ -10,34 +10,38 @@ namespace Awful.Test
 {
     public class ManagerTest
     {
-        WebClient WebClient;
 
         public ManagerTest ()
         {
-            WebClient = Setup.SetupWebClient().Result;
+          
         }
 
         [Fact]
         public async Task GetForumListAsync_Test()
         {
+            var WebClient = Setup.SetupWebClient().Result;
             IndexPageManager indexManager = new IndexPageManager(WebClient);
             var result = await indexManager.GetForumListAsync();
             Assert.NotNull(result);
             Assert.True(result.Any());
+            Assert.True(result.TrueForAll(n => n.Id != 0));
         }
 
         [Fact]
         public async Task GetIndexPageAsyncWithMetadata_Test()
         {
+            var WebClient = Setup.SetupWebClient().Result;
             IndexPageManager indexManager = new IndexPageManager(WebClient);
             var result = await indexManager.GetIndexPageAsync(true);
             Assert.NotNull(result);
             Assert.True(result.Forums.Any());
+            Assert.True(result.Forums.TrueForAll(n => n.Id != 0));
         }
 
         [Fact]
         public async Task GetIndexPageAsync_Test()
         {
+            var WebClient = Setup.SetupWebClient().Result;
             IndexPageManager indexManager = new IndexPageManager(WebClient);
             var result = await indexManager.GetIndexPageAsync();
             Assert.NotNull(result);
@@ -47,6 +51,7 @@ namespace Awful.Test
         [Fact]
         public async Task GetThreadAsync_Test()
         {
+            var WebClient = Setup.SetupWebClient().Result;
             // If we're not authed, this will fail with paywall.
             // Need a good account to handle this in CI...
             if (!WebClient.IsAuthenticated)
@@ -60,6 +65,7 @@ namespace Awful.Test
         [Fact]
         public async Task GetBookmarkAsync_Test()
         {
+            var WebClient = Setup.SetupWebClient().Result;
             // If we're not authed, this will fail with paywall.
             // Need a good account to handle this in CI...
             if (!WebClient.IsAuthenticated)
@@ -72,6 +78,7 @@ namespace Awful.Test
         [Fact]
         public async Task GetForumCategoriesAsync_Test()
         {
+            var WebClient = Setup.SetupWebClient().Result;
             ForumManager forumManager = new ForumManager(WebClient);
             var forumCatList = await forumManager.GetForumCategoriesAsync();
             Assert.NotNull(forumCatList);
@@ -81,6 +88,7 @@ namespace Awful.Test
         [Fact]
         public async Task GetThreadListAsync_Test()
         {
+            var WebClient = Setup.SetupWebClient().Result;
             ForumManager forumManager = new ForumManager(WebClient);
             var forumCatList = await forumManager.GetForumCategoriesAsync();
             Assert.NotNull(forumCatList);

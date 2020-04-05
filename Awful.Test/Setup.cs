@@ -11,7 +11,7 @@ namespace Awful.Test
 {
     public class Setup
     {
-        public static async Task<WebClient> SetupWebClient()
+        public static async Task<WebClient> SetupWebClient(bool useAuth = true)
         {
             var username = Environment.GetEnvironmentVariable("AWFUL_USER");
             var password = Environment.GetEnvironmentVariable("AWFUL_PASSWORD");
