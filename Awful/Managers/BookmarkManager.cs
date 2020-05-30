@@ -22,7 +22,7 @@ namespace Awful.Parser.Managers
             _webManager = webManager;
         }
 
-        public async Task<List<Models.Threads.Thread>> GetAllBookmarksAsync(CancellationToken token = new CancellationToken())
+        public async Task<List<Models.Threads.Thread>> GetAllBookmarksAsync(int perPage = 40, CancellationToken token = new CancellationToken())
         {
             if (!_webManager.IsAuthenticated)
                 throw new Exception("User must be authenticated before using this method.");
@@ -30,7 +30,7 @@ namespace Awful.Parser.Managers
             var page = 1;
             while (true)
             {
-                var threads = await GetBookmarkListAsync(page, token);
+                var threads = await GetBookmarkListAsync(page, perPage, token);
                 if (!threads.Any())
                     break;
                 threadList.AddRange(threads);
