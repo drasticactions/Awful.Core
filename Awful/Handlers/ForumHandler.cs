@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using AngleSharp.Dom;
 using AngleSharp.Html.Dom;
@@ -8,12 +9,15 @@ using Awful.Parser.Models.Forums;
 
 namespace Awful.Parser.Handlers
 {
-    public class ForumHandler
+    /// <summary>
+    /// Handles Something Awful Forum Elements.
+    /// </summary>
+    public static class ForumHandler
     {
         /// <summary>
         /// Add Debug Forum (For Users who can access Apps In Developmental States).
         /// </summary>
-        /// <returns>Debug Forum</returns>
+        /// <returns>Debug Forum.</returns>
         public static Forum AddDebugForum()
         {
             var forum = new Forum()
@@ -21,39 +25,50 @@ namespace Awful.Parser.Handlers
                 Name = "Apps In Developmental States",
                 Location = EndPoints.BaseUrl + "forumdisplay.php?forumid=261",
                 IsSubForum = false,
-                ForumId = 261
+                ForumId = 261,
             };
             return forum;
         }
 
         /// <summary>
-        /// Parses the HTML of the Something Awful Forums front page for the forum categories.
+        /// Parses the forum category list via the Category page select dropdown list.
         /// </summary>
-        /// <param name="html">SA Front Page HTML</param>
-        /// <param name="parser">AngleSharp HtmlParser</param>
-        /// <returns>SA Forums Category List</returns>
+        /// <param name="document">SA Page IHtmlDocument.</param>
+        /// <returns>SA Forums Category List.</returns>
         public static List<Category> ParseCategoryListViaSelect(IHtmlDocument document)
         {
+            if (document == null)
+            {
+                throw new ArgumentNullException(nameof(document));
+            }
+
             var forumSelector = document.All.FirstOrDefault(m => m.LocalName == "select" && m.GetAttribute("name") == "forumid");
             if (forumSelector == null)
             {
-                throw new FormatException("Could not find Forum Selector in HTML");
+                throw new FormatException(Awful.Core.Resources.ExceptionMessages.ForumSelectorMissing);
             }
+
             return new List<Category>();
         }
 
         /// <summary>
-        /// Parses the HTML of the Something Awful Forums front page for the forum categories.
+        /// Parses the forum category list via the main SA Forum page.
         /// </summary>
-        /// <param name="html">SA Front Page HTML</param>
-        /// <param name="parser">AngleSharp HtmlParser</param>
-        /// <returns>SA Forums Category List</returns>
+        /// <param name="document">SA Page IHtmlDocument.</param>
+        /// <returns>SA Forums Category List.</returns>
         public static List<Category> ParseCategoryList(IHtmlDocument document)
         {
-            var forumSelector = document.All.FirstOrDefault(m => m.LocalName == "table" && m.Id == "forums");
-            if (forumSelector == null) {
-                throw new FormatException("Could not find Forums table in given HTML");
+            if (document == null)
+            {
+                throw new ArgumentNullException(nameof(document));
             }
+
+            var forumSelector = document.All.FirstOrDefault(m => m.LocalName == "table" && m.Id == "forums");
+            if (forumSelector == null)
+            {
+                throw new FormatException(Awful.Core.Resources.ExceptionMessages.ForumTableMissing);
+            }
+
             var categories = new List<Category>();
             var rows = forumSelector.QuerySelectorAll("tr");
             var order = 1;
@@ -76,9 +91,12 @@ namespace Awful.Parser.Handlers
 
                     var subForumList = row.QuerySelector(".subforums");
                     if (subForumList == null)
+                    {
                         continue;
+                    }
+
                     var subForumListLinks = subForumList.QuerySelectorAll("a");
-                    foreach(var subForumLink in subForumListLinks)
+                    foreach (var subForumLink in subForumListLinks)
                     {
                         var subForum = GetSubForumFromLink(subForumLink, innerOrder, selectedCatagory.Id);
                         subForum.ParentForumId = forum.ForumId;
@@ -94,23 +112,28 @@ namespace Awful.Parser.Handlers
         /// <summary>
         /// Parses the HTML of the Something Awful Forums front page for the forum groups.
         /// </summary>
-        /// <param name="html">SA Front Page HTML</param>
-        /// <param name="parser">AngleSharp HtmlParser</param>
-        /// <returns>SA Forums Group List</returns>
+        /// <param name="document">SA HTML document.</param>
+        /// <returns>SA Forums Group List.</returns>
         public static List<ForumGroup> ParseForumGroupList(IHtmlDocument document)
         {
+            if (document == null)
+            {
+                throw new ArgumentNullException(nameof(document));
+            }
+
             var forumSelector = document.All.FirstOrDefault(m => m.LocalName == "table" && m.Id == "forums");
             if (forumSelector == null)
             {
-                throw new FormatException("Could not find Forums table in given HTML");
+                throw new FormatException(Awful.Core.Resources.ExceptionMessages.ForumTableMissing);
             }
+
             var categories = new List<Category>();
             var forumGroup = new List<ForumGroup>();
             List<Forum> forums = new List<Forum>();
             var rows = forumSelector.QuerySelectorAll("tr");
             var order = 1;
             var innerOrder = 1;
-            
+
             foreach (var row in rows)
             {
                 if (row.ClassName == "section")
@@ -121,6 +144,7 @@ namespace Awful.Parser.Handlers
                         forumGroup.Add(new ForumGroup(lastCategory, forums));
                         forums = new List<Forum>();
                     }
+
                     var category = GetCategoryFromLink(row, order);
                     categories.Add(category);
                     order++;
@@ -135,7 +159,10 @@ namespace Awful.Parser.Handlers
                     forums.Add(forum);
                     var subForumList = row.QuerySelector(".subforums");
                     if (subForumList == null)
+                    {
                         continue;
+                    }
+
                     var subForumListLinks = subForumList.QuerySelectorAll("a");
                     foreach (var subForumLink in subForumListLinks)
                     {
@@ -152,19 +179,32 @@ namespace Awful.Parser.Handlers
         }
 
         /// <summary>
-        /// Get Forum Page Info
+        /// Get Forum Page Info.
         /// </summary>
-        /// <param name="doc"></param>
-        /// <param name="forum"></param>
-        /// <returns></returns>
-        public static Forum GetForumPageInfo(IHtmlDocument doc, Forum forum)
+        /// <param name="document">The SA Forum Page.</param>
+        /// <param name="forum">The Forum.</param>
+        /// <returns>A Forum with Updated Info.</returns>
+        public static Forum GetForumPageInfo(IHtmlDocument document, Forum forum)
         {
-            var pages = doc.QuerySelector(".pages");
+            if (document == null)
+            {
+                throw new ArgumentNullException(nameof(document));
+            }
+
+            if (forum == null)
+            {
+                throw new ArgumentNullException(nameof(forum));
+            }
+
+            var pages = document.QuerySelector(".pages");
             if (pages == null)
+            {
                 return forum;
+            }
+
             var select = pages.QuerySelector("select");
             var selectedPageItem = select.QuerySelector("option:checked");
-            forum.CurrentPage = Convert.ToInt32(selectedPageItem.TextContent);
+            forum.CurrentPage = Convert.ToInt32(selectedPageItem.TextContent, CultureInfo.InvariantCulture);
             forum.TotalPages = select.ChildElementCount;
             return forum;
         }
@@ -172,12 +212,23 @@ namespace Awful.Parser.Handlers
         /// <summary>
         /// Get detailed forum descriptions from the category page.
         /// </summary>
-        /// <param name="category">The Forum Category</param>
+        /// <param name="document">The SA Forum Page.</param>
+        /// <param name="category">The Forum Category.</param>
         /// <returns>The Forum Category with updated forum descriptions.</returns>
         public static Category ParseForumDescriptions(IHtmlDocument document, Category category)
         {
+            if (document == null)
+            {
+                throw new ArgumentNullException(nameof(document));
+            }
+
+            if (category == null)
+            {
+                throw new ArgumentNullException(nameof(category));
+            }
+
             var subForumListLinks = document.QuerySelectorAll(".subforum");
-            foreach(var row in subForumListLinks)
+            foreach (var row in subForumListLinks)
             {
                 var forumHtml = row.QuerySelector("a");
                 var topicsHtml = row.QuerySelector(".topics");
@@ -185,21 +236,36 @@ namespace Awful.Parser.Handlers
                 var descriptionHtml = row.QuerySelector("dd");
                 var forum = category.ForumList.FirstOrDefault(n => n.Location == forumHtml.GetAttribute("href"));
                 if (forum == null)
+                {
                     continue;
-                forum.Description = descriptionHtml.TextContent.Replace("-", "").Trim();
-                forum.TotalPosts = Convert.ToInt32(postsHtml.TextContent);
-                forum.TotalTopics = Convert.ToInt32(topicsHtml.TextContent);
+                }
+
+                forum.Description = descriptionHtml.TextContent.Replace("-", string.Empty).Trim();
+                forum.TotalPosts = Convert.ToInt32(postsHtml.TextContent, CultureInfo.InvariantCulture);
+                forum.TotalTopics = Convert.ToInt32(topicsHtml.TextContent, CultureInfo.InvariantCulture);
             }
+
             return category;
         }
 
         /// <summary>
         /// Get detailed forum descriptions from the category page.
         /// </summary>
-        /// <param name="forum">The Forum</param>
+        /// <param name="document">The SA Forum Page.</param>
+        /// <param name="forum">The Forum.</param>
         /// <returns>The Forum with updated sub forum descriptions.</returns>
         public static Forum ParseSubForumDescriptions(IHtmlDocument document, Forum forum)
         {
+            if (document == null)
+            {
+                throw new ArgumentNullException(nameof(document));
+            }
+
+            if (forum == null)
+            {
+                throw new ArgumentNullException(nameof(forum));
+            }
+
             var subForumListLinks = document.QuerySelectorAll(".subforum");
             foreach (var row in subForumListLinks)
             {
@@ -209,11 +275,15 @@ namespace Awful.Parser.Handlers
                 var descriptionHtml = row.QuerySelector("dd");
                 var subForum = forum.SubForums.FirstOrDefault(n => n.Location == forumHtml.GetAttribute("href"));
                 if (subForum == null)
+                {
                     continue;
-                subForum.Description = descriptionHtml.TextContent.Replace("-", "").Trim();
-                subForum.TotalPosts = Convert.ToInt32(postsHtml.TextContent);
-                subForum.TotalTopics = Convert.ToInt32(topicsHtml.TextContent);
+                }
+
+                subForum.Description = descriptionHtml.TextContent.Replace("-", string.Empty).Trim();
+                subForum.TotalPosts = Convert.ToInt32(postsHtml.TextContent, CultureInfo.InvariantCulture);
+                subForum.TotalTopics = Convert.ToInt32(topicsHtml.TextContent, CultureInfo.InvariantCulture);
             }
+
             return forum;
         }
 
@@ -224,7 +294,7 @@ namespace Awful.Parser.Handlers
             category.Name = catHtml.TextContent;
             category.Location = catHtml.GetAttribute("href");
             var queryString = HtmlHelpers.ParseQueryString(category.Location);
-            category.Id = Convert.ToInt32(queryString["forumid"]);
+            category.Id = Convert.ToInt32(queryString["forumid"], CultureInfo.InvariantCulture);
             category.Order = order;
             return category;
         }
@@ -235,7 +305,7 @@ namespace Awful.Parser.Handlers
             var forumHtml = row.QuerySelector(".forum");
             forum.Location = forumHtml.GetAttribute("href");
             var queryString = HtmlHelpers.ParseQueryString(forum.Location);
-            forum.ForumId = Convert.ToInt32(queryString["forumid"]);
+            forum.ForumId = Convert.ToInt32(queryString["forumid"], CultureInfo.InvariantCulture);
             forum.CategoryId = categoryId;
             forum.Description = forumHtml.GetAttribute("title");
             forum.Name = forumHtml.TextContent;
@@ -248,7 +318,7 @@ namespace Awful.Parser.Handlers
             var subForum = new Forum();
             subForum.Location = subForumLink.GetAttribute("href");
             var subQueryString = HtmlHelpers.ParseQueryString(subForum.Location);
-            subForum.ForumId = Convert.ToInt32(subQueryString["forumid"]);
+            subForum.ForumId = Convert.ToInt32(subQueryString["forumid"], CultureInfo.InvariantCulture);
             subForum.CategoryId = categoryId;
             subForum.Name = subForumLink.TextContent;
             subForum.IsSubForum = true;

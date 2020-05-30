@@ -1,15 +1,12 @@
-﻿using Awful.Parser.Core;
-using Awful.Parser.Handlers;
-using Awful.Parser.Models.Forums;
-using Awful.Parser.Models.Threads;
-using Awful.Parser.Models.Web;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Awful.Parser.Core;
+using Awful.Parser.Handlers;
+using Awful.Parser.Models.Web;
 
 namespace Awful.Parser.Managers
 {
