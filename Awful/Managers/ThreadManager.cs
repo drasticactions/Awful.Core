@@ -36,7 +36,7 @@ namespace Awful.Parser.Managers
                     ["threadid"] = threadId.ToString()
                 };
                 var header = new FormUrlEncodedContent(dic);
-                result = await _webManager.PostDataAsync(EndPoints.ResetBase, header, token);
+                result = await _webManager.PostDataAsync(EndPoints.ShowThreadBase, header, token);
                 return result;
             }
             catch (Exception ex)

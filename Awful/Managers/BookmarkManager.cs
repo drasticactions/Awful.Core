@@ -39,13 +39,13 @@ namespace Awful.Parser.Managers
             return threadList;
         }
 
-        public async Task<List<Models.Threads.Thread>> GetBookmarkListAsync(int page, CancellationToken token = new CancellationToken())
+        public async Task<List<Models.Threads.Thread>> GetBookmarkListAsync(int page, int perPage = 40, CancellationToken token = new CancellationToken())
         {
             if (!_webManager.IsAuthenticated)
                 throw new Exception("User must be authenticated before using this method.");
             string url = EndPoints.BookmarksUrl;
             if (page >= 0)
-                url = EndPoints.BookmarksUrl + string.Format(EndPoints.PageNumber, page);
+                url = string.Format(EndPoints.BookmarksUrl, perPage) + string.Format(EndPoints.PageNumber, page);
             var result = await _webManager.GetDataAsync(url, token);
             var document = await _webManager.Parser.ParseDocumentAsync(result.ResultHtml, token);
             return ThreadHandler.ParseForumThreadList(document, 0);
