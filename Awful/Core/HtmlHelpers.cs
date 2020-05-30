@@ -1,45 +1,32 @@
-﻿using Awful.Parser.Models.Web;
+﻿// <copyright file="HtmlHelpers.cs" company="Drastic Actions">
+// Copyright (c) Drastic Actions. All rights reserved.
+// </copyright>
+
 using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 using System.Net;
-using System.Net.Http;
 using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
-using System.Text.Json;
-using System.Text.Json.Serialization;
 
 namespace Awful.Parser.Core
 {
-  
-    public static class ErrorHandler
-    {
-        public static Result CreateErrorObject(Result result, string reason, string stacktrace, string type = "", bool isPaywall = false)
-        {
-            result.IsSuccess = false;
-            result.Type = typeof(Error).ToString();
-            if (!isPaywall)
-            {
-                isPaywall = reason.Equals("paywall");
-            }
-            var error = new Error()
-            {
-                Type = type,
-                Reason = reason,
-                StackTrace = stacktrace,
-                IsPaywall = isPaywall
-            };
-            result.ResultJson = JsonSerializer.Serialize(error);
-            return result;
-        }
-    }
-
+    /// <summary>
+    /// HTML Helper Methods.
+    /// </summary>
     public static class HtmlHelpers
     {
+        /// <summary>
+        /// Special HTML Encode method to account for weird stuff Something Awful does to strings.
+        /// </summary>
+        /// <param name="text">String to be HTML encoded.</param>
+        /// <returns>HTML Encoded string.</returns>
         public static string HtmlEncode(string text)
         {
+            if (text == null)
+            {
+                throw new ArgumentNullException(nameof(text));
+            }
+
             // In order to get Unicode characters fully working, we need to first encode the entire post.
             // THEN we decode the bits we can safely pass in, like single/double quotes.
             // If we don't, the post format will be screwed up.
@@ -50,9 +37,13 @@ namespace Awful.Parser.Core
             {
                 int value = Convert.ToInt32(c);
                 if (value > 127)
+                {
                     result.AppendFormat("&#{0};", value);
+                }
                 else
+                {
                     result.Append(c);
+                }
             }
 
             result.Replace("&quot;", "\"");
@@ -62,25 +53,18 @@ namespace Awful.Parser.Core
             return result.ToString();
         }
 
-        public static string WithoutNewLines(this string text)
-        {
-            var sb = new StringBuilder(text.Length);
-            foreach (char i in text)
-            {
-                if (i != '\n' && i != '\r' && i != '\t' && i != '#' && i != '?')
-                {
-                    sb.Append(i);
-                }
-                else if (i == '\n')
-                {
-                    sb.Append(' ');
-                }
-            }
-            return sb.ToString();
-        }
-
+        /// <summary>
+        /// Parses a query string for a given URL.
+        /// </summary>
+        /// <param name="s">The URL or query string to be parsed.</param>
+        /// <returns>A key value dictionary.</returns>
         public static Dictionary<string, string> ParseQueryString(string s)
         {
+            if (s == null)
+            {
+                throw new ArgumentNullException(nameof(s));
+            }
+
             var nvc = new Dictionary<string, string>();
 
             // remove anything other than query string from url
