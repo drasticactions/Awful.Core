@@ -18,7 +18,7 @@ namespace Awful.Parser.Managers
             _webManager = webManager;
         }
 
-        public async Task<List<SAclopediaCategory>> GetCategoryListAsync(CancellationToken token = new CancellationToken())
+        public async Task<List<SAclopediaCategory>> GetCategoryListAsync(CancellationToken token = default)
         {
             if (!_webManager.IsAuthenticated)
                 throw new Exception("User must be authenticated before using this method.");
@@ -27,7 +27,7 @@ namespace Awful.Parser.Managers
             return SAclopediaHandler.ParseCategoryList(document);
         }
 
-        public async Task<List<SAclopediaEntryItem>> GetEntryItemListAsync(int id, int act = 5, CancellationToken token = new CancellationToken())
+        public async Task<List<SAclopediaEntryItem>> GetEntryItemListAsync(int id, int act = 5, CancellationToken token = default)
         {
             if (!_webManager.IsAuthenticated)
                 throw new Exception("User must be authenticated before using this method.");
@@ -36,7 +36,7 @@ namespace Awful.Parser.Managers
             return SAclopediaHandler.ParseEntryItemList(document);
         }
 
-        public async Task<SAclopediaEntry> GetEntryAsync(int id, int act = 3, CancellationToken token = new CancellationToken())
+        public async Task<SAclopediaEntry> GetEntryAsync(int id, int act = 3, CancellationToken token = default)
         {
             if (!_webManager.IsAuthenticated)
                 throw new Exception("User must be authenticated before using this method.");

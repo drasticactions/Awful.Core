@@ -20,7 +20,7 @@ namespace Awful.Core.Managers.JSON
             _webManager = webManager;
         }
 
-        public async Task<IndexPage> GetIndexPageAsync (bool addAdditionalMetadata = false, CancellationToken token = new CancellationToken())
+        public async Task<IndexPage> GetIndexPageAsync (bool addAdditionalMetadata = false, CancellationToken token = default)
         {
             var result = await _webManager.GetDataAsync(EndPoints.IndexPageUrl, token);
             if (!result.IsSuccess)
@@ -37,7 +37,7 @@ namespace Awful.Core.Managers.JSON
             return data;
         }
 
-        public async Task<List<Forum>> GetForumListAsync(CancellationToken token = new CancellationToken())
+        public async Task<List<Forum>> GetForumListAsync(CancellationToken token = default)
         {
             var result = await _webManager.GetDataAsync(EndPoints.IndexPageUrl, token);
             if (!result.IsSuccess)

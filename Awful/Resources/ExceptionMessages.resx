@@ -123,4 +123,10 @@
   <data name="ForumTableMissing" xml:space="preserve">
     <value>Could not find Forums Table in HTML</value>
   </data>
+  <data name="PaywallThreadHit" xml:space="preserve">
+    <value>Sorry, you must be a registered forums member to view this page.</value>
+  </data>
+  <data name="ThreadListMissing" xml:space="preserve">
+    <value>Could not find thread list in HTML</value>
+  </data>
 </root>

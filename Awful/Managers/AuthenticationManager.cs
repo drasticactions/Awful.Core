@@ -26,7 +26,7 @@ namespace Awful.Parser.Managers
         /// <param name="password">The password of the user.</param>
         /// <param name="checkResult">Check the query string for login errors. Default is True.</param>
         /// <returns>An auth result object.</returns>
-        public async Task<AuthResult> AuthenticateAsync(string username, string password, bool checkResult = true, CancellationToken token = new CancellationToken())
+        public async Task<AuthResult> AuthenticateAsync(string username, string password, bool checkResult = true, CancellationToken token = default)
         {
 
             var dic = new Dictionary<string, string>

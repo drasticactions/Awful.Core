@@ -17,7 +17,7 @@ namespace Awful.Parser.Managers
         {
             _webManager = webManager;
         }
-        public async Task<List<SmileCategory>> GetSmileListAsync(CancellationToken token = new CancellationToken())
+        public async Task<List<SmileCategory>> GetSmileListAsync(CancellationToken token = default)
         {
             var result = await _webManager.GetDataAsync(EndPoints.SmileUrl, token);
             var document = await _webManager.Parser.ParseDocumentAsync(result.ResultHtml, token);

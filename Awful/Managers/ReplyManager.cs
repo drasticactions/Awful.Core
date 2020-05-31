@@ -21,7 +21,7 @@ namespace Awful.Core.Managers
             _webManager = webManager;
         }
 
-        public async Task<ForumReply> GetReplyCookiesForEditAsync(long postId, CancellationToken token = new CancellationToken())
+        public async Task<ForumReply> GetReplyCookiesForEditAsync(long postId, CancellationToken token = default)
         {
             string url = string.Format(EndPoints.EditBase, postId);
             var result = await _webManager.GetDataAsync(url, token);
@@ -38,7 +38,7 @@ namespace Awful.Core.Managers
             return forumReplyEntity;
         }
 
-        public async Task<ForumReply> GetReplyCookiesAsync(long threadId = 0, long postId = 0, CancellationToken token = new CancellationToken())
+        public async Task<ForumReply> GetReplyCookiesAsync(long threadId = 0, long postId = 0, CancellationToken token = default)
         {
             if (threadId == 0 && postId == 0) return new ForumReply();
             string url;
@@ -59,7 +59,7 @@ namespace Awful.Core.Managers
             return forumReplyEntity;
         }
 
-        public async Task<Result> SendPostAsync(ForumReply forumReplyEntity, CancellationToken token = new CancellationToken())
+        public async Task<Result> SendPostAsync(ForumReply forumReplyEntity, CancellationToken token = default)
         {
             var result = new Result();
             try
@@ -85,7 +85,7 @@ namespace Awful.Core.Managers
             }
         }
 
-        public async Task<Result> SendUpdatePostAsync(ForumReply forumReplyEntity, CancellationToken token = new CancellationToken())
+        public async Task<Result> SendUpdatePostAsync(ForumReply forumReplyEntity, CancellationToken token = default)
         {
             var result = new Result();
             try
@@ -109,7 +109,7 @@ namespace Awful.Core.Managers
             }
         }
 
-        public async Task<Post> CreatePreviewPostAsync(ForumReply forumReplyEntity, CancellationToken token = new CancellationToken())
+        public async Task<Post> CreatePreviewPostAsync(ForumReply forumReplyEntity, CancellationToken token = default)
         {
             var form = new MultipartFormDataContent
             {
@@ -133,7 +133,7 @@ namespace Awful.Core.Managers
             return new Post { PostHtml = document.QuerySelector(".postbody").InnerHtml };
         }
 
-        public async Task<Post> CreatePreviewEditPostAsync(ForumReply forumReplyEntity, CancellationToken token = new CancellationToken())
+        public async Task<Post> CreatePreviewEditPostAsync(ForumReply forumReplyEntity, CancellationToken token = default)
         {
             var form = new MultipartFormDataContent
             {
@@ -149,7 +149,7 @@ namespace Awful.Core.Managers
             return new Post { PostHtml = document.QuerySelector(".postbody").InnerHtml };
         }
 
-        public async Task<string> GetQuoteStringAsync(long postId, CancellationToken token = new CancellationToken())
+        public async Task<string> GetQuoteStringAsync(long postId, CancellationToken token = default)
         {
             string url = string.Format(EndPoints.QuoteBase, postId);
             var result = await _webManager.GetDataAsync(url, token);

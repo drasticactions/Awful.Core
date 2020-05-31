@@ -69,7 +69,7 @@ namespace Awful.Parser.Core
 
         const string UserAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/49.0.2593.0 Safari/537.36";
 
-        public async Task<Result> GetDataAsync(string uri, CancellationToken token = new CancellationToken())
+        public async Task<Result> GetDataAsync(string uri, CancellationToken token = default)
         {
             string html = "";
             try
@@ -90,7 +90,7 @@ namespace Awful.Parser.Core
             }
         }
 
-        public async Task<Result> PostDataAsync(string uri, FormUrlEncodedContent data, CancellationToken token = new CancellationToken())
+        public async Task<Result> PostDataAsync(string uri, FormUrlEncodedContent data, CancellationToken token = default)
         {
             var html = "";
             try
@@ -113,7 +113,7 @@ namespace Awful.Parser.Core
             }
         }
 
-        public async Task<Result> PostFormDataAsync(string uri, MultipartFormDataContent form, CancellationToken token = new CancellationToken())
+        public async Task<Result> PostFormDataAsync(string uri, MultipartFormDataContent form, CancellationToken token = default)
         {
             var html = "";
             try

@@ -4,6 +4,7 @@
 
 using System;
 using System.Text.Json;
+using Awful.Exceptions;
 using Awful.Parser.Models.Web;
 
 namespace Awful.Parser.Core
@@ -17,16 +18,13 @@ namespace Awful.Parser.Core
         /// Creates a new error object to be given for a user request.
         /// </summary>
         /// <param name="result">The Something Awful request.</param>
-        /// <param name="reason">The reason for the failure, usually given as part of the request.</param>
-        /// <param name="stacktrace">If the error occured in this library, the stack trace.</param>
-        /// <param name="type">The type of error generated.</param>
-        /// <param name="isPaywall">If the error may have come from the paywall.</param>
+        /// <param name="exception">The exception being thrown.</param>
         /// <returns>A new result object with the given error.</returns>
-        public static Result CreateErrorObject(Result result, string reason, string stacktrace, string type = "", bool isPaywall = false)
+        public static Result CreateErrorObject(Result result, Exception exception)
         {
-            if (reason == null)
+            if (exception == null)
             {
-                throw new ArgumentNullException(nameof(reason));
+                throw new ArgumentNullException(nameof(exception));
             }
 
             if (result == null)
@@ -36,16 +34,14 @@ namespace Awful.Parser.Core
 
             result.IsSuccess = false;
             result.Type = typeof(Error).ToString();
-            if (!isPaywall)
-            {
-                isPaywall = reason.Equals("paywall", System.StringComparison.OrdinalIgnoreCase);
-            }
+
+            var isPaywall = exception is PaywallException;
 
             var error = new Error()
             {
-                Type = type,
-                Reason = reason,
-                StackTrace = stacktrace,
+                Type = exception.GetType().ToString(),
+                Reason = exception.Message,
+                StackTrace = exception.StackTrace,
                 IsPaywall = isPaywall,
             };
             result.ResultJson = JsonSerializer.Serialize(error);

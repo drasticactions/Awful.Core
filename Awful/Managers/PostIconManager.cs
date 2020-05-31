@@ -18,7 +18,7 @@ namespace Awful.Parser.Managers
             _webManager = webManager;
         }
 
-        public async Task<List<PostIcon>> GetPostIconsAsync(bool isPrivateMessage = false, int forumId = 0, CancellationToken token = new CancellationToken())
+        public async Task<List<PostIcon>> GetPostIconsAsync(bool isPrivateMessage = false, int forumId = 0, CancellationToken token = default)
         {
             if (!_webManager.IsAuthenticated)
                 throw new Exception("User must be authenticated before using this method.");

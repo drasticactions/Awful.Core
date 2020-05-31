@@ -77,5 +77,23 @@ namespace Awful.Core.Resources {
                 return ResourceManager.GetString("ForumTableMissing", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Sorry, you must be a registered forums member to view this page. に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        internal static string PaywallThreadHit {
+            get {
+                return ResourceManager.GetString("PaywallThreadHit", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Could not find thread list in HTML に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        internal static string ThreadListMissing {
+            get {
+                return ResourceManager.GetString("ThreadListMissing", resourceCulture);
+            }
+        }
     }
 }

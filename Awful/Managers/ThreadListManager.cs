@@ -20,13 +20,13 @@ namespace Awful.Parser.Managers
             _webManager = webManager;
         }
 
-        public async Task<List<Thread>> GetForumThreadListAsync(Forum forum, int page, CancellationToken token = new CancellationToken())
+        public async Task<List<Thread>> GetForumThreadListAsync(Forum forum, int page, CancellationToken token = default)
         {
             var pageUrl = string.Format(EndPoints.ForumPage, forum.ForumId) + string.Format(EndPoints.PageNumber, page);
             var result = await _webManager.GetDataAsync(pageUrl, token);
             var document = await _webManager.Parser.ParseDocumentAsync(result.ResultHtml, token);
             ForumHandler.GetForumPageInfo(document, forum);
-            return ThreadHandler.ParseForumThreadList(document, forum.ForumId);
+            return ThreadHandler.ParseForumThreadList(document);
         }
     }
 }

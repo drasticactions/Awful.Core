@@ -19,7 +19,7 @@ namespace Awful.Parser.Managers
             _webManager = webManager;
         }
 
-        public async Task<List<Category>> GetForumCategoriesViaSelectAsync(CancellationToken token = new CancellationToken())
+        public async Task<List<Category>> GetForumCategoriesViaSelectAsync(CancellationToken token = default)
         {
             if (!_webManager.IsAuthenticated)
                 throw new Exception("User must be authenticated before using this method.");
@@ -28,14 +28,14 @@ namespace Awful.Parser.Managers
             return ForumHandler.ParseCategoryList(document);
         }
 
-        public async Task<Category> GetForumDescriptionsFromCategoryPageAsync(Category category, CancellationToken token = new CancellationToken())
+        public async Task<Category> GetForumDescriptionsFromCategoryPageAsync(Category category, CancellationToken token = default)
         {
             var result = await _webManager.GetDataAsync(string.Format(EndPoints.ForumPage, category.Id, token));
             var document = await _webManager.Parser.ParseDocumentAsync(result.ResultHtml, token);
             return ForumHandler.ParseForumDescriptions(document, category);
         }
 
-        public async Task<Forum> GetForumDescriptionsFromForumPageAsync(Forum forum, CancellationToken token = new CancellationToken())
+        public async Task<Forum> GetForumDescriptionsFromForumPageAsync(Forum forum, CancellationToken token = default)
         {
             if (forum.SubForums.Count <= 0)
                 return forum;
@@ -44,7 +44,7 @@ namespace Awful.Parser.Managers
             return ForumHandler.ParseSubForumDescriptions(document, forum);
         }
 
-        public async Task<List<Category>> GetForumCategoriesAsync(CancellationToken token = new CancellationToken())
+        public async Task<List<Category>> GetForumCategoriesAsync(CancellationToken token = default)
         {
             var result = await _webManager.GetDataAsync(EndPoints.BaseUrl, token);
             var document = await _webManager.Parser.ParseDocumentAsync(result.ResultHtml, token);

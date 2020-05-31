@@ -19,7 +19,7 @@ namespace Awful.Parser.Managers
             _webManager = webManager;
         }
 
-        public async Task<List<Models.Threads.Thread>> GetAllBookmarksAsync(int perPage = 40, CancellationToken token = new CancellationToken())
+        public async Task<List<Models.Threads.Thread>> GetAllBookmarksAsync(int perPage = 40, CancellationToken token = default)
         {
             if (!_webManager.IsAuthenticated)
                 throw new Exception("User must be authenticated before using this method.");
@@ -36,7 +36,7 @@ namespace Awful.Parser.Managers
             return threadList;
         }
 
-        public async Task<List<Models.Threads.Thread>> GetBookmarkListAsync(int page, int perPage = 40, CancellationToken token = new CancellationToken())
+        public async Task<List<Models.Threads.Thread>> GetBookmarkListAsync(int page, int perPage = 40, CancellationToken token = default)
         {
             if (!_webManager.IsAuthenticated)
                 throw new Exception("User must be authenticated before using this method.");
@@ -45,10 +45,10 @@ namespace Awful.Parser.Managers
                 url = string.Format(EndPoints.BookmarksUrl, perPage) + string.Format(EndPoints.PageNumber, page);
             var result = await _webManager.GetDataAsync(url, token);
             var document = await _webManager.Parser.ParseDocumentAsync(result.ResultHtml, token);
-            return ThreadHandler.ParseForumThreadList(document, 0);
+            return ThreadHandler.ParseForumThreadList(document);
         }
 
-        public async Task<Result> AddBookmarkAsync(long threadId, CancellationToken token = new CancellationToken())
+        public async Task<Result> AddBookmarkAsync(long threadId, CancellationToken token = default)
         {
             try
             {
@@ -63,11 +63,11 @@ namespace Awful.Parser.Managers
             }
             catch (Exception ex)
             {
-                return ErrorHandler.CreateErrorObject(new Result(false), ex.Message, ex.StackTrace);
+                return ErrorHandler.CreateErrorObject(new Result(false), ex);
             }
         }
 
-        public async Task<Result> RemoveBookmarkAsync(long threadId, CancellationToken token = new CancellationToken())
+        public async Task<Result> RemoveBookmarkAsync(long threadId, CancellationToken token = default)
         {
             var dic = new Dictionary<string, string>
             {

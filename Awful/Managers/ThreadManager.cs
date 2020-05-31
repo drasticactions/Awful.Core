@@ -22,7 +22,7 @@ namespace Awful.Parser.Managers
             _webManager = webManager;
         }
 
-        public async Task<Result> MarkThreadUnreadAsync(long threadId, CancellationToken token = new CancellationToken())
+        public async Task<Result> MarkThreadUnreadAsync(long threadId, CancellationToken token = default)
         {
             if (!_webManager.IsAuthenticated)
                 throw new Exception("User must be authenticated before using this method.");
@@ -41,11 +41,11 @@ namespace Awful.Parser.Managers
             }
             catch (Exception ex)
             {
-                return ErrorHandler.CreateErrorObject(result, ex.Message, ex.StackTrace);
+                return ErrorHandler.CreateErrorObject(result, ex);
             }
         }
 
-        public async Task<Models.Threads.Thread> GetThreadAsync(Models.Threads.Thread thread, bool goToNewestPost = false, CancellationToken token = new CancellationToken())
+        public async Task<Models.Threads.Thread> GetThreadAsync(Models.Threads.Thread thread, bool goToNewestPost = false, CancellationToken token = default)
         {
             thread.Posts.Clear();
             var baseUri = string.Format(EndPoints.ThreadPage, thread.ThreadId);
@@ -58,12 +58,12 @@ namespace Awful.Parser.Managers
             return ThreadHandler.ParseThread(document, thread);
         }
 
-        public async Task<Models.Threads.Thread> GetThreadAsync (int threadId, bool goToNewestPost = false, CancellationToken token = new CancellationToken())
+        public async Task<Models.Threads.Thread> GetThreadAsync (int threadId, bool goToNewestPost = false, CancellationToken token = default)
         {
             return await GetThreadAsync(new Models.Threads.Thread { ThreadId = threadId }, goToNewestPost, token);
         }
 
-        public async Task<Post> GetPostAsync(int postId, CancellationToken token = new CancellationToken())
+        public async Task<Post> GetPostAsync(int postId, CancellationToken token = default)
         {
             var baseUri = string.Format(EndPoints.ShowPost, postId);
             var result = await _webManager.GetDataAsync(baseUri, token);
@@ -72,7 +72,7 @@ namespace Awful.Parser.Managers
             return PostHandler.ParsePost(document, post);
         }
 
-        public async Task<NewThread> GetThreadCookiesAsync(int forumId, CancellationToken token = new CancellationToken())
+        public async Task<NewThread> GetThreadCookiesAsync(int forumId, CancellationToken token = default)
         {
             string url = string.Format(EndPoints.NewThread, forumId);
             var result = await _webManager.GetDataAsync(url, token);
@@ -80,7 +80,7 @@ namespace Awful.Parser.Managers
             return ThreadHandler.ParseNewThread(document);
         }
 
-        public async Task<Result> CreateNewThreadAsync(NewThread newThreadEntity, CancellationToken token = new CancellationToken())
+        public async Task<Result> CreateNewThreadAsync(NewThread newThreadEntity, CancellationToken token = default)
         {
             if (!_webManager.IsAuthenticated)
                 throw new Exception("User must be authenticated before using this method.");
@@ -99,7 +99,7 @@ namespace Awful.Parser.Managers
             return await _webManager.PostFormDataAsync(EndPoints.NewThreadBase, form, token);
         }
 
-        public async Task<Post> CreateNewThreadPreviewAsync(NewThread newThreadEntity, CancellationToken token = new CancellationToken())
+        public async Task<Post> CreateNewThreadPreviewAsync(NewThread newThreadEntity, CancellationToken token = default)
         {
             if (!_webManager.IsAuthenticated)
                 throw new Exception("User must be authenticated before using this method.");
@@ -125,7 +125,7 @@ namespace Awful.Parser.Managers
             return PostHandler.ParsePostPreview(await _webManager.Parser.ParseDocumentAsync(result.ResultHtml, token));
         }
 
-        public async Task<Result> MarkPostAsLastReadAsAsync(long threadId, int index, CancellationToken token = new CancellationToken())
+        public async Task<Result> MarkPostAsLastReadAsAsync(long threadId, int index, CancellationToken token = default)
         {
             try
             {
@@ -133,7 +133,7 @@ namespace Awful.Parser.Managers
             }
             catch (Exception ex)
             {
-                return ErrorHandler.CreateErrorObject(new Result(false), ex.Message, ex.StackTrace);
+                return ErrorHandler.CreateErrorObject(new Result(false), ex);
             }
         }
     }

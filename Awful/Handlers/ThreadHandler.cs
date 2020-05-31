@@ -1,47 +1,63 @@
-﻿using System;
+﻿// <copyright file="ThreadHandler.cs" company="Drastic Actions">
+// Copyright (c) Drastic Actions. All rights reserved.
+// </copyright>
+
+using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using AngleSharp.Dom;
 using AngleSharp.Html.Dom;
+using Awful.Exceptions;
 using Awful.Parser.Models.Posts;
 using Awful.Parser.Models.Threads;
 using Awful.Parser.Models.Users;
 
 namespace Awful.Parser.Handlers
 {
-    public class ThreadHandler
+    public static class ThreadHandler
     {
         public static void CheckPaywall(IHtmlDocument doc)
         {
+            if (doc == null)
+            {
+                throw new ArgumentNullException(nameof(doc));
+            }
+
             var test = doc.QuerySelector(".inner");
             if (test != null)
             {
                 if (test.TextContent.Contains("Sorry, you must be a registered forums member to view this page."))
                 {
-                    throw new Exception("paywall");
+                    throw new PaywallException(Awful.Core.Resources.ExceptionMessages.PaywallThreadHit);
                 }
             }
         }
 
-        public static List<Thread> ParseForumThreadList(IHtmlDocument doc, int forumId)
+        public static List<Thread> ParseForumThreadList(IHtmlDocument doc)
         {
             CheckPaywall(doc);
             var forumThreadList = new List<Thread>();
             var threadTableList = doc.QuerySelector("#forum");
             if (threadTableList == null)
-                throw new FormatException("Could not find thread list in given HTML");
+            {
+                throw new FormatException(Awful.Core.Resources.ExceptionMessages.ThreadListMissing);
+            }
 
             var rows = threadTableList.QuerySelectorAll("tr");
 
-            foreach(var row in rows)
+            foreach (var row in rows)
             {
                 if (row.Id == null)
+                {
                     continue;
+                }
+
                 var thread = new Thread
                 {
-                    ThreadId = Convert.ToInt32(row.Id.Replace("thread", ""))
+                    ThreadId = Convert.ToInt32(row.Id.Replace("thread", string.Empty), CultureInfo.InvariantCulture),
                 };
                 ParseStar(row.QuerySelector(".star"), thread);
                 ParseIcon(row.QuerySelector(".icon"), thread);

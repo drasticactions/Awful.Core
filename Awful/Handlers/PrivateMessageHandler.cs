@@ -1,5 +1,10 @@
-﻿using System;
+﻿// <copyright file="PrivateMessageHandler.cs" company="Drastic Actions">
+// Copyright (c) Drastic Actions. All rights reserved.
+// </copyright>
+
+using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using AngleSharp.Dom;
@@ -9,19 +14,34 @@ using Awful.Parser.Models.PostIcons;
 
 namespace Awful.Parser.Handlers
 {
-    public class PrivateMessageHandler
+    /// <summary>
+    /// Handles Something Awful Private Message Elements.
+    /// </summary>
+    public static class PrivateMessageHandler
     {
+        /// <summary>
+        /// Parses the SA Private Message page list for messages.
+        /// </summary>
+        /// <param name="doc">Document containing the SA PM page.</param>
+        /// <returns>List of Private Messages.</returns>
         public static List<PrivateMessage> ParseList(IHtmlDocument doc)
         {
+            if (doc == null)
+            {
+                throw new ArgumentNullException(nameof(doc));
+            }
+
             var privateMessageList = new List<PrivateMessage>();
 
             var pmList = doc.QuerySelector(".standard.full");
             if (pmList == null)
+            {
                 return privateMessageList;
+            }
 
             var pmListBody = doc.QuerySelector("tbody");
             var pmListRows = pmListBody.QuerySelectorAll("tr");
-            foreach(var pmRow in pmListRows)
+            foreach (var pmRow in pmListRows)
             {
                 privateMessageList.Add(ParseRow(pmRow));
             }
@@ -43,7 +63,10 @@ namespace Awful.Parser.Handlers
         private static void ParseStatus(IElement element, PrivateMessage pm)
         {
             if (element == null)
+            {
                 return;
+            }
+
             var img = element.QuerySelector("img");
             pm.StatusImageIconUrl = img.GetAttribute("src");
             pm.StatusImageIconLocation = Path.GetFileNameWithoutExtension(pm.ImageIconUrl);
@@ -52,10 +75,16 @@ namespace Awful.Parser.Handlers
         private static void ParseIcon(IElement element, PrivateMessage pm)
         {
             if (element == null)
+            {
                 return;
+            }
+
             var img = element.QuerySelector("img");
             if (img == null)
+            {
                 return;
+            }
+
             pm.ImageIconUrl = img.GetAttribute("src");
             pm.ImageIconLocation = Path.GetFileNameWithoutExtension(pm.ImageIconUrl);
             pm.Icon = new PostIcon() { ImageUrl = pm.ImageIconUrl };
@@ -64,25 +93,34 @@ namespace Awful.Parser.Handlers
         private static void ParseTitle(IElement element, PrivateMessage pm)
         {
             if (element == null)
+            {
                 return;
+            }
+
             var threadList = element.QuerySelector("a");
             pm.MessageUrl = threadList.GetAttribute("href");
-            pm.Id = Convert.ToInt32(pm.MessageUrl.Split('=').Last());
+            pm.Id = Convert.ToInt32(pm.MessageUrl.Split('=').Last(), CultureInfo.InvariantCulture);
             pm.Title = threadList.TextContent;
         }
 
         private static void ParseSender(IElement element, PrivateMessage pm)
         {
             if (element == null)
+            {
                 return;
+            }
+
             pm.Sender = element.TextContent;
         }
 
         private static void ParseDate(IElement element, PrivateMessage pm)
         {
             if (element == null)
+            {
                 return;
-            pm.Date = DateTime.Parse(element.TextContent.Replace("at", ""));
+            }
+
+            pm.Date = DateTime.Parse(element.TextContent.Replace("at", string.Empty), CultureInfo.InvariantCulture);
         }
     }
 }
