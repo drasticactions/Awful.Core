@@ -1,28 +1,30 @@
-﻿using Awful.Core.Models.JSON;
-using Awful.Parser.Core;
-using System.Text.Json;
-using System.Text.Json.Serialization;
+﻿// <copyright file="IndexPageManager.cs" company="Drastic Actions">
+// Copyright (c) Drastic Actions. All rights reserved.
+// </copyright>
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
+using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
+using Awful.Core.Models.JSON;
+using Awful.Parser.Core;
 
 namespace Awful.Core.Managers.JSON
 {
     public class IndexPageManager
     {
-        private readonly WebClient _webManager;
+        private readonly WebClient webManager;
 
         public IndexPageManager(WebClient webManager)
         {
-            _webManager = webManager;
+            this.webManager = webManager;
         }
 
         public async Task<IndexPage> GetIndexPageAsync (bool addAdditionalMetadata = false, CancellationToken token = default)
         {
-            var result = await _webManager.GetDataAsync(EndPoints.IndexPageUrl, token);
+            var result = await webManager.GetDataAsync(EndPoints.IndexPageUrl, token);
             if (!result.IsSuccess)
                 throw new Exception("Could not get Index page JSON");
 
@@ -32,14 +34,16 @@ namespace Awful.Core.Managers.JSON
             var data = JsonSerializer.Deserialize<IndexPage>(result.ResultHtml);
 
             foreach (var forum in data.Forums)
+            {
                 UpdateForumMetadata(forum);
+            }
 
             return data;
         }
 
         public async Task<List<Forum>> GetForumListAsync(CancellationToken token = default)
         {
-            var result = await _webManager.GetDataAsync(EndPoints.IndexPageUrl, token);
+            var result = await webManager.GetDataAsync(EndPoints.IndexPageUrl, token);
             if (!result.IsSuccess)
                 throw new Exception("Could not get Index page JSON");
 
