@@ -61,7 +61,7 @@ namespace Awful.Core.Resources {
         }
         
         /// <summary>
-        ///   Could not find Forum Selector in HTML に類似しているローカライズされた文字列を検索します。
+        ///   Could not find Forum Selector in HTML. に類似しているローカライズされた文字列を検索します。
         /// </summary>
         internal static string ForumSelectorMissing {
             get {
@@ -70,7 +70,7 @@ namespace Awful.Core.Resources {
         }
         
         /// <summary>
-        ///   Could not find Forums Table in HTML に類似しているローカライズされた文字列を検索します。
+        ///   Could not find Forums Table in HTML. に類似しているローカライズされた文字列を検索します。
         /// </summary>
         internal static string ForumTableMissing {
             get {
@@ -88,11 +88,47 @@ namespace Awful.Core.Resources {
         }
         
         /// <summary>
-        ///   Could not find thread list in HTML に類似しているローカライズされた文字列を検索します。
+        ///   Must include a postId greater than 0. に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        internal static string PostIdMissing {
+            get {
+                return ResourceManager.GetString("PostIdMissing", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Must include either a threadId or a postId greater than 0. に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        internal static string ThreadAndPostIdMissing {
+            get {
+                return ResourceManager.GetString("ThreadAndPostIdMissing", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Must include a threadId greater than 0. に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        internal static string ThreadIdMissing {
+            get {
+                return ResourceManager.GetString("ThreadIdMissing", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Could not find thread list in HTML. に類似しているローカライズされた文字列を検索します。
         /// </summary>
         internal static string ThreadListMissing {
             get {
                 return ResourceManager.GetString("ThreadListMissing", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   User must be authenticated before using this method. に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        internal static string UserAuthenticationError {
+            get {
+                return ResourceManager.GetString("UserAuthenticationError", resourceCulture);
             }
         }
     }

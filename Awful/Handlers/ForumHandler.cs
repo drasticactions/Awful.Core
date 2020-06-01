@@ -6,6 +6,7 @@ using AngleSharp.Dom;
 using AngleSharp.Html.Dom;
 using Awful.Parser.Core;
 using Awful.Parser.Models.Forums;
+using Awful.Parser.Models.Threads;
 
 namespace Awful.Parser.Handlers
 {
@@ -182,31 +183,31 @@ namespace Awful.Parser.Handlers
         /// Get Forum Page Info.
         /// </summary>
         /// <param name="document">The SA Forum Page.</param>
-        /// <param name="forum">The Forum.</param>
-        /// <returns>A Forum with Updated Info.</returns>
-        public static Forum GetForumPageInfo(IHtmlDocument document, Forum forum)
+        /// <param name="threadList">The Forum Thread List.</param>
+        /// <returns>A Forum Thread List with Updated Info.</returns>
+        public static ThreadList GetForumPageInfo(IHtmlDocument document, ThreadList threadList)
         {
             if (document == null)
             {
                 throw new ArgumentNullException(nameof(document));
             }
 
-            if (forum == null)
+            if (threadList == null)
             {
-                throw new ArgumentNullException(nameof(forum));
+                throw new ArgumentNullException(nameof(threadList));
             }
 
             var pages = document.QuerySelector(".pages");
             if (pages == null)
             {
-                return forum;
+                return threadList;
             }
 
             var select = pages.QuerySelector("select");
             var selectedPageItem = select.QuerySelector("option:checked");
-            forum.CurrentPage = Convert.ToInt32(selectedPageItem.TextContent, CultureInfo.InvariantCulture);
-            forum.TotalPages = select.ChildElementCount;
-            return forum;
+            threadList.CurrentPage = Convert.ToInt32(selectedPageItem.TextContent, CultureInfo.InvariantCulture);
+            threadList.TotalPages = select.ChildElementCount;
+            return threadList;
         }
 
         /// <summary>

@@ -12,6 +12,7 @@ using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using AngleSharp.Html.Parser;
+using Awful.Exceptions;
 using Awful.Parser.Models.Bans;
 using Awful.Parser.Models.Web;
 
@@ -99,21 +100,14 @@ namespace Awful.Parser.Core
         public async Task<Result> GetDataAsync(string endpoint, CancellationToken token = default)
         {
             string html = string.Empty;
-            try
+            this.Client.DefaultRequestHeaders.IfModifiedSince = DateTimeOffset.UtcNow;
+            var result = await this.Client.GetAsync(new Uri(endpoint), token).ConfigureAwait(false);
+            var stream = await result.Content.ReadAsStreamAsync().ConfigureAwait(false);
+            using (var reader = new StreamReader(stream, System.Text.Encoding.GetEncoding("ISO-8859-1")))
             {
-                this.Client.DefaultRequestHeaders.IfModifiedSince = DateTimeOffset.UtcNow;
-                var result = await this.Client.GetAsync(new Uri(endpoint), token).ConfigureAwait(false);
-                var stream = await result.Content.ReadAsStreamAsync().ConfigureAwait(false);
-                using (var reader = new StreamReader(stream, System.Text.Encoding.GetEncoding("ISO-8859-1")))
-                {
-                    html = reader.ReadToEnd();
-                    return new Result(result.IsSuccessStatusCode, html, string.Empty, string.Empty, result.RequestMessage.RequestUri.AbsoluteUri);
-                }
-            }
-            catch (Exception ex)
-            {
-                var error = new Error(ex.GetType().FullName, ex.Message, ex.StackTrace, false);
-                return new Result(false, html, JsonSerializer.Serialize(error), string.Empty, endpoint);
+                html = reader.ReadToEnd();
+                CheckForPaywall(html);
+                return new Result(html, endpoint: result.RequestMessage.RequestUri.AbsoluteUri);
             }
         }
 
@@ -127,27 +121,20 @@ namespace Awful.Parser.Core
         public async Task<Result> PostDataAsync(string endpoint, FormUrlEncodedContent data, CancellationToken token = default)
         {
             var html = string.Empty;
-            try
+            this.Client.DefaultRequestHeaders.IfModifiedSince = DateTimeOffset.UtcNow;
+            var result = await this.Client.PostAsync(new Uri(endpoint), data, token).ConfigureAwait(false);
+            var stream = await result.Content.ReadAsStreamAsync().ConfigureAwait(false);
+            using (var reader = new StreamReader(stream, System.Text.Encoding.GetEncoding("ISO-8859-1")))
             {
-                this.Client.DefaultRequestHeaders.IfModifiedSince = DateTimeOffset.UtcNow;
-                var result = await this.Client.PostAsync(new Uri(endpoint), data, token).ConfigureAwait(false);
-                var stream = await result.Content.ReadAsStreamAsync().ConfigureAwait(false);
-                using (var reader = new StreamReader(stream, System.Text.Encoding.GetEncoding("ISO-8859-1")))
+                html = reader.ReadToEnd();
+                CheckForPaywall(html);
+                var returnUrl = result.Headers.Location != null ? result.Headers.Location.OriginalString : string.Empty;
+                if (string.IsNullOrEmpty(returnUrl))
                 {
-                    html = reader.ReadToEnd();
-                    var returnUrl = result.Headers.Location != null ? result.Headers.Location.OriginalString : string.Empty;
-                    if (string.IsNullOrEmpty(returnUrl))
-                    {
-                        returnUrl = result.RequestMessage.RequestUri != null ? result.RequestMessage.RequestUri.ToString() : string.Empty;
-                    }
-
-                    return new Result(result.IsSuccessStatusCode, html, string.Empty, string.Empty, returnUrl);
+                    returnUrl = result.RequestMessage.RequestUri != null ? result.RequestMessage.RequestUri.ToString() : string.Empty;
                 }
-            }
-            catch (Exception ex)
-            {
-                var error = new Error(ex.GetType().FullName, ex.Message, ex.StackTrace, false);
-                return new Result(false, html, JsonSerializer.Serialize(error), string.Empty, endpoint);
+
+                return new Result(html, endpoint: returnUrl);
             }
         }
 
@@ -161,24 +148,14 @@ namespace Awful.Parser.Core
         public async Task<Result> PostFormDataAsync(string endpoint, MultipartFormDataContent form, CancellationToken token = default)
         {
             var html = string.Empty;
-            try
+            var result = await this.Client.PostAsync(new Uri(endpoint), form, token).ConfigureAwait(false);
+            var stream = await result.Content.ReadAsStreamAsync().ConfigureAwait(false);
+            using (var reader = new StreamReader(stream, System.Text.Encoding.GetEncoding("ISO-8859-1")))
             {
-                var result = await this.Client.PostAsync(new Uri(endpoint), form, token).ConfigureAwait(false);
-                var stream = await result.Content.ReadAsStreamAsync().ConfigureAwait(false);
-                using (var reader = new StreamReader(stream, System.Text.Encoding.GetEncoding("ISO-8859-1")))
-                {
-                    html = reader.ReadToEnd();
-                    var newResult = new Result(result.IsSuccessStatusCode, html)
-                    {
-                        RequestUri = result.RequestMessage.RequestUri.ToString(),
-                    };
-                    return newResult;
-                }
-            }
-            catch (Exception ex)
-            {
-                var error = new Error(ex.GetType().FullName, ex.Message, ex.StackTrace, false);
-                return new Result(false, html, JsonSerializer.Serialize(error), string.Empty, endpoint);
+                html = reader.ReadToEnd();
+                CheckForPaywall(html);
+                var newResult = new Result(html, endpoint: result.RequestMessage.RequestUri.ToString());
+                return newResult;
             }
         }
 
@@ -218,6 +195,14 @@ namespace Awful.Parser.Core
             }
 
             this.isDisposed = true;
+        }
+
+        private static void CheckForPaywall(string html)
+        {
+            if (html.Contains("Sorry, you must be a registered forums member to view this page."))
+            {
+                throw new PaywallException(Awful.Core.Resources.ExceptionMessages.PaywallThreadHit);
+            }
         }
     }
 }

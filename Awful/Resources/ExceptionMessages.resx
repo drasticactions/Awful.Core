@@ -118,15 +118,27 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="ForumSelectorMissing" xml:space="preserve">
-    <value>Could not find Forum Selector in HTML</value>
+    <value>Could not find Forum Selector in HTML.</value>
   </data>
   <data name="ForumTableMissing" xml:space="preserve">
-    <value>Could not find Forums Table in HTML</value>
+    <value>Could not find Forums Table in HTML.</value>
   </data>
   <data name="PaywallThreadHit" xml:space="preserve">
     <value>Sorry, you must be a registered forums member to view this page.</value>
   </data>
+  <data name="PostIdMissing" xml:space="preserve">
+    <value>Must include a postId greater than 0.</value>
+  </data>
+  <data name="ThreadAndPostIdMissing" xml:space="preserve">
+    <value>Must include either a threadId or a postId greater than 0.</value>
+  </data>
+  <data name="ThreadIdMissing" xml:space="preserve">
+    <value>Must include a threadId greater than 0.</value>
+  </data>
   <data name="ThreadListMissing" xml:space="preserve">
-    <value>Could not find thread list in HTML</value>
+    <value>Could not find thread list in HTML.</value>
+  </data>
+  <data name="UserAuthenticationError" xml:space="preserve">
+    <value>User must be authenticated before using this method.</value>
   </data>
 </root>

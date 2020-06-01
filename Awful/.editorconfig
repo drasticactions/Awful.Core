@@ -1,0 +1,4 @@
+﻿[*.cs]
+
+# CA1031: 一般的な例外の種類はキャッチしません
+dotnet_diagnostic.CA1031.severity = none

@@ -57,7 +57,7 @@ namespace Awful.Test
             if (!WebClient.IsAuthenticated)
                 return;
             ThreadManager threadManager = new ThreadManager(WebClient);
-            var result = await threadManager.GetThreadAsync(3847930, true);
+            var result = await threadManager.GetThreadAsync(3847930);
             Assert.NotNull(result);
             Assert.True(result.Posts.Any());
         }
@@ -95,9 +95,9 @@ namespace Awful.Test
             Assert.True(forumCatList.Any());
             
             ThreadListManager threadManager = new ThreadListManager(WebClient);
-            var result = await threadManager.GetForumThreadListAsync(forumCatList.First().ForumList.First(), 1);
+            var result = await threadManager.GetForumThreadListAsync(forumCatList.First().ForumList.First().ForumId, 1);
             Assert.NotNull(result);
-            Assert.True(result.Any());
+            Assert.True(result.Threads.Any());
         }
     }
 }

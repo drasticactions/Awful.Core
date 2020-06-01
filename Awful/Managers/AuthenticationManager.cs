@@ -1,52 +1,76 @@
-﻿using Awful.Parser.Core;
-using Awful.Parser.Models.Web;
+﻿// <copyright file="AuthenticationManager.cs" company="Drastic Actions">
+// Copyright (c) Drastic Actions. All rights reserved.
+// </copyright>
+
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Net.Http;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Awful.Parser.Core;
+using Awful.Parser.Models.Web;
 
 namespace Awful.Parser.Managers
 {
+    /// <summary>
+    /// Manager for handling Authentication on Something Awful.
+    /// </summary>
     public class AuthenticationManager
     {
-        public AuthenticationManager(WebClient web)
-        {
-            webManager = web;
-        }
-
-        WebClient webManager;
+        private WebClient webManager;
 
         /// <summary>
-        /// Authenticate a Something Awful user. This does not use the normal "WebManager" for handling the request
+        /// Initializes a new instance of the <see cref="AuthenticationManager"/> class.
+        /// </summary>
+        /// <param name="web">The SA WebClient.</param>
+        public AuthenticationManager(WebClient web)
+        {
+            this.webManager = web;
+        }
+
+        /// <summary>
+        /// Authenticate a Something Awful user. This does not use the normal "this.webManager" for handling the request
         /// because it requires we return the cookie container, so it can be used for actual authenticated requests.
         /// </summary>
         /// <param name="username">The Something Awful username.</param>
         /// <param name="password">The password of the user.</param>
-        /// <param name="checkResult">Check the query string for login errors. Default is True.</param>
+        /// <param name="token">A CancellationToken.</param>
         /// <returns>An auth result object.</returns>
-        public async Task<AuthResult> AuthenticateAsync(string username, string password, bool checkResult = true, CancellationToken token = default)
+        public async Task<AuthResult> AuthenticateAsync(string username, string password, CancellationToken token = default)
         {
-
             var dic = new Dictionary<string, string>
             {
                 ["action"] = "login",
                 ["username"] = username,
-                ["password"] = password
+                ["password"] = password,
             };
-            var header = new FormUrlEncodedContent(dic);
+            using var header = new FormUrlEncodedContent(dic);
             try
             {
-                var webResult = await webManager.PostDataAsync(EndPoints.LoginUrl, header, token);
-                var authResult = new AuthResult(webManager.CookieContainer, webResult.IsSuccess);
-                if (string.IsNullOrEmpty(webResult.AbsoluteUri)) return authResult;
-                var location = webResult.AbsoluteUri.StartsWith("\\") ? "http:" + webResult.AbsoluteUri : webResult.AbsoluteUri;
+                var webResult = await this.webManager.PostDataAsync(EndPoints.LoginUrl, header, token).ConfigureAwait(false);
+                var authResult = new AuthResult(this.webManager.CookieContainer, true);
+                if (string.IsNullOrEmpty(webResult.AbsoluteEndpoint))
+                {
+                    return authResult;
+                }
+
+                var location = webResult.AbsoluteEndpoint.StartsWith("\\", StringComparison.InvariantCulture) ? "http:" + webResult.AbsoluteEndpoint : webResult.AbsoluteEndpoint;
                 var uri = new Uri(location);
+
                 // TODO: Make DAMN sure that the cookie result and web query string are enough checks to verify being logged in.
                 var queryString = HtmlHelpers.ParseQueryString(uri.Query);
-                if (!queryString.ContainsKey("loginerror")) return authResult;
-                if (queryString["loginerror"] == null) return authResult;
+                if (!queryString.ContainsKey("loginerror"))
+                {
+                    return authResult;
+                }
+
+                if (queryString["loginerror"] == null)
+                {
+                    return authResult;
+                }
+
                 switch (queryString["loginerror"])
                 {
                     case "1":
@@ -67,12 +91,13 @@ namespace Awful.Parser.Managers
                             "Something happened and we couldn't log you in! That's a bummer :(.";
                         break;
                 }
+
                 authResult.IsSuccess = false;
                 return authResult;
             }
             catch (Exception ex)
             {
-                return new AuthResult(webManager.CookieContainer, false, ex.Message);
+                return new AuthResult(this.webManager.CookieContainer, false, ex.Message);
             }
         }
     }

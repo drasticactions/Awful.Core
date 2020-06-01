@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text.RegularExpressions;
 using AngleSharp.Dom;
 using AngleSharp.Html.Dom;
@@ -82,6 +83,11 @@ namespace Awful.Parser.Handlers
                 FormKey = document.QuerySelector(@"input[name=""formkey""]").GetAttribute("value"),
                 FormCookie = document.QuerySelector(@"input[name=""form_cookie""]").GetAttribute("value")
             };
+        }
+
+        public static Thread ParseThread(IHtmlDocument doc, string responseUri = "")
+        {
+            return ParseThread(doc, new Thread(), responseUri);
         }
 
         public static Thread ParseThread(IHtmlDocument doc, Thread thread, string responseUri = "")

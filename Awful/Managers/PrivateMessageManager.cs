@@ -1,8 +1,7 @@
-﻿using Awful.Parser.Core;
-using Awful.Parser.Handlers;
-using Awful.Parser.Models.Messages;
-using Awful.Parser.Models.Posts;
-using Awful.Parser.Models.Web;
+﻿// <copyright file="PrivateMessageManager.cs" company="Drastic Actions">
+// Copyright (c) Drastic Actions. All rights reserved.
+// </copyright>
+
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -11,30 +10,42 @@ using System.Net.Http;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Awful.Exceptions;
+using Awful.Parser.Core;
+using Awful.Parser.Handlers;
+using Awful.Parser.Models.Messages;
+using Awful.Parser.Models.Posts;
+using Awful.Parser.Models.Web;
 
 namespace Awful.Parser.Managers
 {
     public class PrivateMessageManager
     {
-        private readonly WebClient _webManager;
+        private readonly WebClient webManager;
 
         public PrivateMessageManager(WebClient webManager)
         {
-            _webManager = webManager;
+            this.webManager = webManager;
         }
 
         public async Task<List<PrivateMessage>> GetAllPrivateMessageListAsync(CancellationToken token = default)
         {
-            if (!_webManager.IsAuthenticated)
-                throw new Exception("User must be authenticated before using this method.");
+            if (!this.webManager.IsAuthenticated)
+            {
+                throw new UserAuthenticationException(Awful.Core.Resources.ExceptionMessages.UserAuthenticationError);
+            }
+
             var pmList = new List<PrivateMessage>();
             var page = 0;
             while (true)
             {
-                var result = await GetPrivateMessageListAsync(page, token);
+                var result = await this.GetPrivateMessageListAsync(page, token).ConfigureAwait(false); ;
                 pmList.AddRange(result);
                 if (!result.Any())
+                {
                     break;
+                }
+
                 page++;
             }
 
@@ -43,23 +54,29 @@ namespace Awful.Parser.Managers
 
         public async Task<List<PrivateMessage>> GetPrivateMessageListAsync(int page, CancellationToken token = default)
         {
-            if (!_webManager.IsAuthenticated)
-                throw new Exception("User must be authenticated before using this method.");
+            if (!this.webManager.IsAuthenticated)
+            {
+                throw new UserAuthenticationException(Awful.Core.Resources.ExceptionMessages.UserAuthenticationError);
+            }
+
             var url = EndPoints.PrivateMessages;
             if (page > 0)
             {
                 url = EndPoints.PrivateMessages + string.Format(EndPoints.PageNumber, page);
             }
 
-            var result = await _webManager.GetDataAsync(url, token);
-            var document = await _webManager.Parser.ParseDocumentAsync(result.ResultHtml, token);
+            var result = await this.webManager.GetDataAsync(url, token).ConfigureAwait(false);
+            var document = await this.webManager.Parser.ParseDocumentAsync(result.ResultHtml, token).ConfigureAwait(false);
             return PrivateMessageHandler.ParseList(document);
         }
 
         public async Task<Post> GetPrivateMessageAsync(int id, CancellationToken token = default)
         {
-            if (!_webManager.IsAuthenticated)
-                throw new Exception("User must be authenticated before using this method.");
+            if (!this.webManager.IsAuthenticated)
+            {
+                throw new UserAuthenticationException(Awful.Core.Resources.ExceptionMessages.UserAuthenticationError);
+            }
+
             var pm = new PrivateMessage() { Id = id };
             await GetPrivateMessageAsync(pm, token);
             return pm.Post;
@@ -67,23 +84,25 @@ namespace Awful.Parser.Managers
 
         public async Task<Post> GetPrivateMessageAsync(PrivateMessage message, CancellationToken token = default)
         {
-            if (!_webManager.IsAuthenticated)
-                throw new Exception("User must be authenticated before using this method.");
-            var result = await _webManager.GetDataAsync(EndPoints.PrivateMessages + $"?action=show&privatemessageid={message.Id}", token);
-            var document = await _webManager.Parser.ParseDocumentAsync(result.ResultHtml, token);
+            if (!this.webManager.IsAuthenticated)
+            {
+                throw new UserAuthenticationException(Awful.Core.Resources.ExceptionMessages.UserAuthenticationError);
+            }
+
+            var result = await this.webManager.GetDataAsync(EndPoints.PrivateMessages + $"?action=show&privatemessageid={message.Id}", token).ConfigureAwait(false);
+            var document = await this.webManager.Parser.ParseDocumentAsync(result.ResultHtml, token).ConfigureAwait(false);
             message.Post = PostHandler.ParsePost(document, document.Body);
             return message.Post;
         }
 
         public async Task<Result> SendPrivateMessageAsync(NewPrivateMessage newPrivateMessageEntity, CancellationToken token = default)
         {
-            if (!_webManager.IsAuthenticated)
-                throw new Exception("User must be authenticated before using this method.");
-            Result result = new Result();
-            MultipartFormDataContent form;
-            try
+            if (!this.webManager.IsAuthenticated)
             {
-                form = new MultipartFormDataContent
+                throw new UserAuthenticationException(Awful.Core.Resources.ExceptionMessages.UserAuthenticationError);
+            }
+
+            using var form = new MultipartFormDataContent
             {
                 {new StringContent("dosend"), "action"},
                 {new StringContent(newPrivateMessageEntity.Receiver), "touser"},
@@ -93,29 +112,12 @@ namespace Awful.Parser.Managers
                 {new StringContent("yes"), "parseurl"},
                 {new StringContent("Send Message"), "submit"}
             };
-                if (newPrivateMessageEntity.Icon != null)
-                {
-                    form.Add(new StringContent(newPrivateMessageEntity.Icon.Id.ToString(CultureInfo.InvariantCulture)), "iconid");
-                }
-            }
-            catch (Exception ex)
+            if (newPrivateMessageEntity.Icon != null)
             {
-                ErrorHandler.CreateErrorObject(result, ex);
-                return result;
+                form.Add(new StringContent(newPrivateMessageEntity.Icon.Id.ToString(CultureInfo.InvariantCulture)), "iconid");
             }
 
-            try
-            {
-
-                result = await _webManager.PostFormDataAsync(EndPoints.NewPrivateMessageBase, form, token);
-                return result;
-            }
-            catch (Exception ex)
-            {
-                ErrorHandler.CreateErrorObject(result, ex);
-                return result;
-            }
+            return await this.webManager.PostFormDataAsync(EndPoints.NewPrivateMessageBase, form, token).ConfigureAwait(false);
         }
-
     }
 }
