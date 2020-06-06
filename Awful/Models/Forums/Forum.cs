@@ -1,4 +1,8 @@
-﻿using System.Collections.Generic;
+﻿// <copyright file="Forum.cs" company="Drastic Actions">
+// Copyright (c) Drastic Actions. All rights reserved.
+// </copyright>
+
+using System.Collections.Generic;
 using System.Text.Json.Serialization;
 
 namespace Awful.Parser.Models.Forums

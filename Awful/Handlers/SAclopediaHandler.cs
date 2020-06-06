@@ -47,7 +47,7 @@ namespace Awful.Parser.Handlers
         }
 
         /// <summary>
-        /// Parse an SAclopedia entry
+        /// Parse an SAclopedia entry.
         /// </summary>
         /// <param name="document">The SAclopedia Document.</param>
         /// <param name="id">The SAclopedia Id.</param>

@@ -20,11 +20,9 @@ namespace Awful.Parser.Handlers
         /// <returns>A CookieContainer.</returns>
         public static CookieContainer LoadCookie(string path)
         {
-            using (FileStream stream = File.OpenRead(path))
-            {
-                var formatter = new BinaryFormatter();
-                return (CookieContainer)formatter.Deserialize(stream);
-            }
+            using FileStream stream = File.OpenRead(path);
+            var formatter = new BinaryFormatter();
+            return (CookieContainer)formatter.Deserialize(stream);
         }
 
         /// <summary>
@@ -34,18 +32,16 @@ namespace Awful.Parser.Handlers
         /// <param name="path">The path where the cookie should be saved.</param>
         public static void SaveCookie(CookieContainer cookieContainer, string path)
         {
-            using (FileStream stream = File.Create(path))
-            {
-                var formatter = new BinaryFormatter();
-                formatter.Serialize(stream, cookieContainer);
-            }
+            using FileStream stream = File.Create(path);
+            var formatter = new BinaryFormatter();
+            formatter.Serialize(stream, cookieContainer);
         }
 
         /// <summary>
         /// Deleted a cookie.
         /// </summary>
         /// <param name="path">Path of the cookie.</param>
-        public static void RemoveCookie (string path)
+        public static void RemoveCookie(string path)
         {
             System.IO.File.Delete(path);
         }

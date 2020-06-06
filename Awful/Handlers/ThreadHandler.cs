@@ -18,8 +18,16 @@ using Awful.Parser.Models.Users;
 
 namespace Awful.Parser.Handlers
 {
+    /// <summary>
+    /// Handles SAclopedia Elements.
+    /// </summary>
     public static class ThreadHandler
     {
+        /// <summary>
+        /// Checks if the current IHtmlDocument contains a paywall message.
+        /// Throws a PaywallException if the content is paywalled.
+        /// </summary>
+        /// <param name="doc">IHtmlDocument containing the SA Page.</param>
         public static void CheckPaywall(IHtmlDocument doc)
         {
             if (doc == null)
@@ -37,6 +45,11 @@ namespace Awful.Parser.Handlers
             }
         }
 
+        /// <summary>
+        /// Parses the IHtmlDocument for a forum thread list.
+        /// </summary>
+        /// <param name="doc">IHtmlDocument containing the Forum List.</param>
+        /// <returns>List of Threads.</returns>
         public static List<Thread> ParseForumThreadList(IHtmlDocument doc)
         {
             CheckPaywall(doc);
@@ -76,51 +89,96 @@ namespace Awful.Parser.Handlers
             return forumThreadList;
         }
 
+        /// <summary>
+        /// Parses the content of a new thread page to get info about it.
+        /// </summary>
+        /// <param name="document">The IHtmlDocument of the New Thread page.</param>
+        /// <returns>NewThread.</returns>
         public static NewThread ParseNewThread(IHtmlDocument document)
         {
+            if (document == null)
+            {
+                throw new ArgumentNullException(nameof(document));
+            }
+
             return new NewThread
             {
                 FormKey = document.QuerySelector(@"input[name=""formkey""]").GetAttribute("value"),
-                FormCookie = document.QuerySelector(@"input[name=""form_cookie""]").GetAttribute("value")
+                FormCookie = document.QuerySelector(@"input[name=""form_cookie""]").GetAttribute("value"),
             };
         }
 
-        public static Thread ParseThread(IHtmlDocument doc, string responseUri = "")
+        /// <summary>
+        /// Parses a thread for posts.
+        /// </summary>
+        /// <param name="doc">An IHtmlDocument with the thread posts.</param>
+        /// <param name="responseEndpoint">The endpoint of the response.</param>
+        /// <returns>A thread.</returns>
+        public static Thread ParseThread(IHtmlDocument doc, string responseEndpoint = "")
         {
-            return ParseThread(doc, new Thread(), responseUri);
+            return ParseThread(doc, new Thread(), responseEndpoint);
         }
 
-        public static Thread ParseThread(IHtmlDocument doc, Thread thread, string responseUri = "")
+        /// <summary>
+        /// Parses a thread for posts.
+        /// </summary>
+        /// <param name="doc">An IHtmlDocument with the thread posts.</param>
+        /// <param name="thread">The Thread.</param>
+        /// <param name="responseEndpoint">The endpoint of the response.</param>
+        /// <returns>A thread.</returns>
+        public static Thread ParseThread(IHtmlDocument doc, Thread thread, string responseEndpoint = "")
         {
+            if (thread == null)
+            {
+                throw new ArgumentNullException(nameof(thread));
+            }
+
             CheckPaywall(doc);
             ParseArchive(doc, thread);
-            ParseThreadInfo(doc, thread, responseUri);
+            ParseThreadInfo(doc, thread, responseEndpoint);
             ParseThreadPageNumbers(doc, thread);
             ParseThreadPage(doc, thread);
             ParseThreadPosts(doc, thread);
             return thread;
         }
 
+        /// <summary>
+        /// Parses the previous posts shown when making a new post.
+        /// </summary>
+        /// <param name="doc">The IHtmlDocument of a new post page.</param>
+        /// <returns>List of Posts.</returns>
         public static List<Post> ParsePreviousPosts(IHtmlDocument doc)
         {
+            if (doc == null)
+            {
+                throw new ArgumentNullException(nameof(doc));
+            }
+
             var posts = new List<Post>();
             var threadDivTableHolder = doc.QuerySelector("#thread");
             foreach (var threadTable in threadDivTableHolder.QuerySelectorAll("table"))
             {
                 if (string.IsNullOrEmpty(threadTable.GetAttribute("data-idx")))
+                {
                     continue;
+                }
+
                 posts.Add(PostHandler.ParsePost(doc, threadTable));
             }
+
             return posts;
         }
 
         private static void ParseThreadPosts(IHtmlDocument doc, Thread thread)
         {
             var threadDivTableHolder = doc.QuerySelector("#thread");
-            foreach(var threadTable in threadDivTableHolder.QuerySelectorAll("table.post"))
+            foreach (var threadTable in threadDivTableHolder.QuerySelectorAll("table.post"))
             {
-                if (string.IsNullOrEmpty(threadTable.Id.Replace("post", "")))
+                if (string.IsNullOrEmpty(threadTable.Id.Replace("post", string.Empty)))
+                {
                     continue;
+                }
+
                 thread.Posts.Add(PostHandler.ParsePost(doc, threadTable));
             }
         }
@@ -129,8 +187,8 @@ namespace Awful.Parser.Handlers
         {
             thread.Name = doc.Title.Replace(" - The Something Awful Forums", string.Empty);
             var threadBody = doc.QuerySelector("body");
-            thread.ThreadId = Convert.ToInt32(threadBody.GetAttribute("data-thread"));
-            thread.ForumId = Convert.ToInt32(threadBody.GetAttribute("data-forum"));
+            thread.ThreadId = Convert.ToInt32(threadBody.GetAttribute("data-thread"), CultureInfo.InvariantCulture);
+            thread.ForumId = Convert.ToInt32(threadBody.GetAttribute("data-forum"), CultureInfo.InvariantCulture);
         }
 
         private static void ParseThreadInfo(IHtmlDocument doc, Thread thread, string responseUri = "")
@@ -138,12 +196,15 @@ namespace Awful.Parser.Handlers
             thread.LoggedInUserName = doc.QuerySelector("#loggedinusername").TextContent;
             thread.IsLoggedIn = thread.LoggedInUserName != "Unregistered Faggot";
             if (string.IsNullOrEmpty(responseUri))
+            {
                 return;
+            }
+
             string[] test = responseUri.Split('#');
 
             if (test.Length > 1 && test[1].Contains("pti"))
             {
-                thread.ScrollToPost = Int32.Parse(Regex.Match(responseUri.Split('#')[1], @"\d+").Value) - 1;
+                thread.ScrollToPost = int.Parse(Regex.Match(responseUri.Split('#')[1], @"\d+").Value, CultureInfo.InvariantCulture) - 1;
                 thread.ScrollToPostString = string.Concat("#", responseUri.Split('#')[1]);
             }
         }
@@ -152,16 +213,24 @@ namespace Awful.Parser.Handlers
         {
             var archiveButton = doc.QuerySelector(@"img[src*=""button-archive""]");
             if (archiveButton != null)
+            {
                 thread.IsArchived = true;
+            }
         }
 
         private static void ParseStar(IElement element, Thread thread)
         {
             if (element == null)
+            {
                 return;
+            }
+
             var starColor = element.ClassList.FirstOrDefault(n => n.Contains("bm") && !n.Contains("bm-1"));
             if (string.IsNullOrEmpty(starColor))
+            {
                 return;
+            }
+
             thread.StarColor = starColor;
             thread.IsBookmark = true;
         }
@@ -169,18 +238,27 @@ namespace Awful.Parser.Handlers
         private static void ParseLastSeen(IElement element, Thread thread)
         {
             if (element == null)
+            {
                 return;
+            }
+
             thread.HasSeen = true;
             var count = element.QuerySelector(".count");
             if (count == null)
+            {
                 return;
-            thread.RepliesSinceLastOpened = Convert.ToInt32(count.TextContent);
+            }
+
+            thread.RepliesSinceLastOpened = Convert.ToInt32(count.TextContent, CultureInfo.InvariantCulture);
         }
 
         private static void ParseIcon(IElement element, Thread thread)
         {
             if (element == null)
+            {
                 return;
+            }
+
             var img = element.QuerySelector("img");
             thread.ImageIconUrl = img.GetAttribute("src");
             thread.ImageIconLocation = Path.GetFileNameWithoutExtension(thread.ImageIconUrl);
@@ -189,7 +267,10 @@ namespace Awful.Parser.Handlers
         private static void ParseIcon2(IElement element, Thread thread)
         {
             if (element == null)
+            {
                 return;
+            }
+
             var img = element.QuerySelector("img");
             thread.StoreImageIconUrl = img.GetAttribute("src");
             thread.StoreImageIconLocation = Path.GetFileNameWithoutExtension(thread.StoreImageIconUrl);
@@ -198,7 +279,10 @@ namespace Awful.Parser.Handlers
         private static void ParseTitle(IElement element, Thread thread)
         {
             if (element == null)
+            {
                 return;
+            }
+
             if (element.ClassList.Contains("title_sticky"))
                 thread.IsSticky = true;
             var threadList = element.QuerySelector(".thread_title");
@@ -208,11 +292,16 @@ namespace Awful.Parser.Handlers
         private static void ParseAuthor(IElement element, Thread thread)
         {
             if (element == null)
+            {
                 return;
+            }
+
             var authorLink = element.QuerySelector("a");
-            var user = new User();
-            user.Id = Convert.ToInt64(authorLink.GetAttribute("href").Split('=').Last());
-            user.Username = authorLink.TextContent;
+            var user = new User
+            {
+                Id = Convert.ToInt64(authorLink.GetAttribute("href").Split('=').Last(), CultureInfo.InvariantCulture),
+                Username = authorLink.TextContent,
+            };
             thread.Author = user.Username;
             thread.AuthorId = user.Id;
         }
@@ -220,39 +309,51 @@ namespace Awful.Parser.Handlers
         private static void ParseReplies(IElement element, Thread thread)
         {
             if (element == null)
+            {
                 return;
-            thread.ReplyCount = Convert.ToInt32(element.TextContent);
+            }
+
+            thread.ReplyCount = Convert.ToInt32(element.TextContent, CultureInfo.InvariantCulture);
             thread.TotalPages = (thread.ReplyCount / 40) + 1;
         }
 
         private static void ParseViews(IElement element, Thread thread)
         {
             if (element == null)
+            {
                 return;
-            thread.ViewCount = Convert.ToInt32(element.TextContent);
+            }
+
+            thread.ViewCount = Convert.ToInt32(element.TextContent, CultureInfo.InvariantCulture);
         }
 
         private static void ParseRating(IElement element, Thread thread)
         {
             if (element == null || element.ChildElementCount <= 0)
+            {
                 return;
+            }
+
             var img = element.QuerySelector("img");
             thread.RatingImageUrl = img.GetAttribute("src");
             thread.RatingImage = Path.GetFileNameWithoutExtension(thread.RatingImageUrl);
             var firstSplit = img.GetAttribute("title").Split('-');
-            thread.TotalRatingVotes = Convert.ToInt32(Regex.Match(firstSplit[0], @"\d+").Value);
-            thread.Rating = Convert.ToDecimal(Regex.Match(firstSplit[1], @"[\d]{1,4}([.,][\d]{1,2})?").Value);
+            thread.TotalRatingVotes = Convert.ToInt32(Regex.Match(firstSplit[0], @"\d+").Value, CultureInfo.InvariantCulture);
+            thread.Rating = Convert.ToDecimal(Regex.Match(firstSplit[1], @"[\d]{1,4}([.,][\d]{1,2})?").Value, CultureInfo.InvariantCulture);
         }
 
         private static void ParseLastPost(IElement element, Thread thread)
         {
             if (element == null)
+            {
                 return;
+            }
+
             var date = element.QuerySelector(".date");
             var author = element.QuerySelector(".author");
             var user = new User();
-            thread.KilledOn = DateTime.Parse(date.TextContent);
-            user.Id = Convert.ToInt64(author.GetAttribute("href").Split('=').Last());
+            thread.KilledOn = DateTime.Parse(date.TextContent, CultureInfo.InvariantCulture);
+            user.Id = Convert.ToInt64(author.GetAttribute("href").Split('=').Last(), CultureInfo.InvariantCulture);
             user.Username = author.TextContent;
             thread.KilledById = user.Id;
             thread.KilledBy = user.Username;
@@ -269,6 +370,7 @@ namespace Awful.Parser.Handlers
                     thread.TotalPages = 1;
                     return;
                 }
+
                 var select = pages.QuerySelector("select");
                 if (select == null)
                 {
@@ -276,8 +378,9 @@ namespace Awful.Parser.Handlers
                     thread.TotalPages = 1;
                     return;
                 }
+
                 var selectedPageItem = select.QuerySelector("option:checked");
-                thread.CurrentPage = Convert.ToInt32(selectedPageItem.TextContent);
+                thread.CurrentPage = Convert.ToInt32(selectedPageItem.TextContent, CultureInfo.InvariantCulture);
                 thread.TotalPages = select.ChildElementCount;
             }
             catch (Exception)
