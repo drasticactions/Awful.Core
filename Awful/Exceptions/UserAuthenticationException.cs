@@ -1,4 +1,4 @@
-﻿// <copyright file="UserAuthenticationError.cs" company="Drastic Actions">
+﻿// <copyright file="UserAuthenticationException.cs" company="Drastic Actions">
 // Copyright (c) Drastic Actions. All rights reserved.
 // </copyright>
 
@@ -8,7 +8,6 @@ using System.Text;
 
 namespace Awful.Exceptions
 {
-
     /// <summary>
     /// Exception thrown when a user an auth error.
     /// </summary>

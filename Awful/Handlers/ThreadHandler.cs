@@ -7,7 +7,6 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using System.Text.RegularExpressions;
 using AngleSharp.Dom;
 using AngleSharp.Html.Dom;
@@ -284,7 +283,10 @@ namespace Awful.Parser.Handlers
             }
 
             if (element.ClassList.Contains("title_sticky"))
+            {
                 thread.IsSticky = true;
+            }
+
             var threadList = element.QuerySelector(".thread_title");
             thread.Name = threadList.TextContent;
         }
@@ -361,34 +363,25 @@ namespace Awful.Parser.Handlers
 
         private static void ParseThreadPageNumbers(IHtmlDocument doc, Thread thread)
         {
-            try
-            {
-                var pages = doc.QuerySelector(".pages");
-                if (pages == null)
-                {
-                    thread.CurrentPage = 1;
-                    thread.TotalPages = 1;
-                    return;
-                }
-
-                var select = pages.QuerySelector("select");
-                if (select == null)
-                {
-                    thread.CurrentPage = 1;
-                    thread.TotalPages = 1;
-                    return;
-                }
-
-                var selectedPageItem = select.QuerySelector("option:checked");
-                thread.CurrentPage = Convert.ToInt32(selectedPageItem.TextContent, CultureInfo.InvariantCulture);
-                thread.TotalPages = select.ChildElementCount;
-            }
-            catch (Exception)
+            var pages = doc.QuerySelector(".pages");
+            if (pages == null)
             {
                 thread.CurrentPage = 1;
                 thread.TotalPages = 1;
                 return;
             }
+
+            var select = pages.QuerySelector("select");
+            if (select == null)
+            {
+                thread.CurrentPage = 1;
+                thread.TotalPages = 1;
+                return;
+            }
+
+            var selectedPageItem = select.QuerySelector("option:checked");
+            thread.CurrentPage = Convert.ToInt32(selectedPageItem.TextContent, CultureInfo.InvariantCulture);
+            thread.TotalPages = select.ChildElementCount;
         }
     }
 }

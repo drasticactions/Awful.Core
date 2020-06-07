@@ -4,6 +4,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Net;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -38,7 +39,7 @@ namespace Awful.Parser.Core
                 int value = Convert.ToInt32(c);
                 if (value > 127)
                 {
-                    result.AppendFormat("&#{0};", value);
+                    result.AppendFormat(CultureInfo.InvariantCulture, "&#{0};", value);
                 }
                 else
                 {

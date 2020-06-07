@@ -13,7 +13,9 @@ using Awful.Parser.Core;
 
 namespace Awful.Core.Managers.JSON
 {
-
+    /// <summary>
+    /// Manager for the Main Forums Page.
+    /// </summary>
     public class IndexPageManager
     {
         private readonly WebClient webManager;

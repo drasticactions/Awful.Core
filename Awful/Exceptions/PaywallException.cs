@@ -8,7 +8,6 @@ using System.Text;
 
 namespace Awful.Exceptions
 {
-
     /// <summary>
     /// Exception thrown when a user hits a paywall page.
     /// </summary>
