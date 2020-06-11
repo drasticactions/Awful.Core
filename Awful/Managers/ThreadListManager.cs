@@ -46,7 +46,7 @@ namespace Awful.Parser.Managers
             var document = await this.webManager.Parser.ParseDocumentAsync(result.ResultHtml, token).ConfigureAwait(false);
             var threadList = new ThreadList();
             ForumHandler.GetForumPageInfo(document, threadList);
-            threadList.Threads = ThreadHandler.ParseForumThreadList(document);
+            threadList.Threads.AddRange(ThreadHandler.ParseForumThreadList(document));
             return threadList;
         }
     }

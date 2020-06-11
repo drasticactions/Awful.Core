@@ -20,7 +20,7 @@ namespace Awful.Parser.Models.Forums
         public bool IsSubForum { get; set; }
 
         [JsonIgnore]
-        public List<Forum> SubForums { get; set; } = new List<Forum>();
+        public List<Forum> SubForums { get; } = new List<Forum>();
 
         public int TotalPages { get; set; }
 
@@ -35,8 +35,8 @@ namespace Awful.Parser.Models.Forums
 
         public int CategoryId { get; set; }
 
-
         public bool IsBookmarks { get; set; }
+
         public int Order { get; set; }
 
         public int TotalTopics { get; set; }

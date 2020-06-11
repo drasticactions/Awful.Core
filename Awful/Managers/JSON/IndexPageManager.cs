@@ -25,7 +25,7 @@ namespace Awful.Core.Managers.JSON
             this.webManager = webManager;
         }
 
-        public async Task<IndexPage> GetIndexPageAsync (bool addAdditionalMetadata = false, CancellationToken token = default)
+        public async Task<IndexPage> GetIndexPageAsync(bool addAdditionalMetadata = false, CancellationToken token = default)
         {
             var result = await this.webManager.GetDataAsync(EndPoints.IndexPageUrl, token).ConfigureAwait(false);
 

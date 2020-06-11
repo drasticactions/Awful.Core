@@ -18,6 +18,6 @@ namespace Awful.Parser.Models.Forums
         public int Order { get; set; }
 
         [JsonIgnore]
-        public List<Forum> ForumList { get; set; } = new List<Forum>();
+        public List<Forum> ForumList { get; } = new List<Forum>();
     }
 }

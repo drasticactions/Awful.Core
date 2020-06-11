@@ -1,4 +1,8 @@
-﻿using System;
+﻿// <copyright file="ThreadList.cs" company="Drastic Actions">
+// Copyright (c) Drastic Actions. All rights reserved.
+// </copyright>
+
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using Awful.Parser.Models.Forums;
@@ -12,6 +16,6 @@ namespace Awful.Parser.Models.Threads
 
         public int TotalPages { get; set; }
 
-        public List<Thread> Threads { get; set; }
+        public List<Thread> Threads { get; } = new List<Thread>();
     }
 }

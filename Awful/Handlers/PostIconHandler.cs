@@ -39,7 +39,7 @@ namespace Awful.Parser.Handlers
                 postIconList.Add(new PostIcon()
                 {
                     Id = inputId,
-                    ImageUrl = imageLocation,
+                    ImageEndpoint = imageLocation,
                     ImageLocation = Path.GetFileNameWithoutExtension(imageLocation),
                     Title = srcAlt,
                 });

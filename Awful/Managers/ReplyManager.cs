@@ -41,8 +41,7 @@ namespace Awful.Core.Managers
             forumReplyEntity.MapEditPostInformation(
                 quote,
                 postId,
-                bookmarks
-                );
+                bookmarks);
             return forumReplyEntity;
         }
 
@@ -65,9 +64,8 @@ namespace Awful.Core.Managers
                 inputs["formkey"].GetAttribute("value"),
                 inputs["form_cookie"].GetAttribute("value"),
                 quote,
-                inputs["threadid"].GetAttribute("value")
-                );
-            forumReplyEntity.ForumPosts = posts;
+                inputs["threadid"].GetAttribute("value"));
+            forumReplyEntity.ForumPosts.AddRange(posts);
             return forumReplyEntity;
         }
 

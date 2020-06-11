@@ -44,7 +44,7 @@ namespace Awful.Parser.Managers
                 throw new ArgumentNullException(nameof(category));
             }
 
-            var result = await this.webManager.GetDataAsync(string.Format(CultureInfo.InvariantCulture, EndPoints.ForumPage, category.Id, token)).ConfigureAwait(false);
+            var result = await this.webManager.GetDataAsync(string.Format(CultureInfo.InvariantCulture, EndPoints.ForumPage, category.Id), token).ConfigureAwait(false);
             var document = await this.webManager.Parser.ParseDocumentAsync(result.ResultHtml, token).ConfigureAwait(false);
             return ForumHandler.ParseForumDescriptions(document, category);
         }
@@ -61,7 +61,7 @@ namespace Awful.Parser.Managers
                 return forum;
             }
 
-            var result = await this.webManager.GetDataAsync(string.Format(CultureInfo.InvariantCulture, EndPoints.ForumPage, forum.ForumId, token)).ConfigureAwait(false);
+            var result = await this.webManager.GetDataAsync(string.Format(CultureInfo.InvariantCulture, EndPoints.ForumPage, forum.ForumId), token).ConfigureAwait(false);
             var document = await this.webManager.Parser.ParseDocumentAsync(result.ResultHtml, token).ConfigureAwait(false);
             return ForumHandler.ParseSubForumDescriptions(document, forum);
         }

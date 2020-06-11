@@ -43,7 +43,7 @@ namespace Awful.Parser.Handlers
                     {
                         Category = smileCategory.Name,
                         Title = smile.TextContent.Trim(),
-                        ImageUrl = image,
+                        ImageEndpoint = image,
                         ImageLocation = Path.GetFileNameWithoutExtension(image),
                     });
                 }

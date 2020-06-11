@@ -1,7 +1,11 @@
-﻿using Awful.Parser.Models.PostIcons;
+﻿// <copyright file="NewPrivateMessage.cs" company="Drastic Actions">
+// Copyright (c) Drastic Actions. All rights reserved.
+// </copyright>
+
 using System;
 using System.Collections.Generic;
 using System.Text;
+using Awful.Parser.Models.PostIcons;
 
 namespace Awful.Parser.Models.Messages
 {

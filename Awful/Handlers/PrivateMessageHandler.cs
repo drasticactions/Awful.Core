@@ -68,8 +68,8 @@ namespace Awful.Parser.Handlers
             }
 
             var img = element.QuerySelector("img");
-            pm.StatusImageIconUrl = img.GetAttribute("src");
-            pm.StatusImageIconLocation = Path.GetFileNameWithoutExtension(pm.ImageIconUrl);
+            pm.StatusImageIconEndpoint = img.GetAttribute("src");
+            pm.StatusImageIconLocation = Path.GetFileNameWithoutExtension(pm.ImageIconEndpoint);
         }
 
         private static void ParseIcon(IElement element, PrivateMessage pm)
@@ -85,9 +85,9 @@ namespace Awful.Parser.Handlers
                 return;
             }
 
-            pm.ImageIconUrl = img.GetAttribute("src");
-            pm.ImageIconLocation = Path.GetFileNameWithoutExtension(pm.ImageIconUrl);
-            pm.Icon = new PostIcon() { ImageUrl = pm.ImageIconUrl };
+            pm.ImageIconEndpoint = img.GetAttribute("src");
+            pm.ImageIconLocation = Path.GetFileNameWithoutExtension(pm.ImageIconEndpoint);
+            pm.Icon = new PostIcon() { ImageEndpoint = pm.ImageIconEndpoint };
         }
 
         private static void ParseTitle(IElement element, PrivateMessage pm)
@@ -98,8 +98,8 @@ namespace Awful.Parser.Handlers
             }
 
             var threadList = element.QuerySelector("a");
-            pm.MessageUrl = threadList.GetAttribute("href");
-            pm.Id = Convert.ToInt32(pm.MessageUrl.Split('=').Last(), CultureInfo.InvariantCulture);
+            pm.MessageEndpoint = threadList.GetAttribute("href");
+            pm.Id = Convert.ToInt32(pm.MessageEndpoint.Split('=').Last(), CultureInfo.InvariantCulture);
             pm.Title = threadList.TextContent;
         }
 

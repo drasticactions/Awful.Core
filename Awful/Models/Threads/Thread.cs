@@ -1,4 +1,8 @@
-﻿using System;
+﻿// <copyright file="Thread.cs" company="Drastic Actions">
+// Copyright (c) Drastic Actions. All rights reserved.
+// </copyright>
+
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using Awful.Parser.Models.Forums;
@@ -12,11 +16,11 @@ namespace Awful.Parser.Models.Threads
 
         public string Location { get; set; }
 
-        public string ImageIconUrl { get; set; } = "";
+        public string ImageIconEndpoint { get; set; } = string.Empty;
 
         public string ImageIconLocation { get; set; }
 
-        public string StoreImageIconUrl { get; set; }
+        public string StoreImageIconEndpoint { get; set; }
 
         public string StoreImageIconLocation { get; set; }
 
@@ -34,7 +38,7 @@ namespace Awful.Parser.Models.Threads
 
         public string RatingImage { get; set; }
 
-        public string RatingImageUrl { get; set; }
+        public string RatingImageEndpoint { get; set; }
 
         public string KilledBy { get; set; }
 
@@ -88,11 +92,11 @@ namespace Awful.Parser.Models.Threads
 
         public int OrderNumber { get; set; }
 
-        public List<Post> Posts { get; set; } = new List<Post>();
+        public List<Post> Posts { get; } = new List<Post>();
 
         public Thread Clone()
         {
-            return MemberwiseClone() as Thread;
+            return this.MemberwiseClone() as Thread;
         }
     }
 }

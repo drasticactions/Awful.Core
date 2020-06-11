@@ -1,4 +1,4 @@
-// <copyright file="BanItem.cs" company="Drastic Actions">
+// <copyright file="BanPage.cs" company="Drastic Actions">
 // Copyright (c) Drastic Actions. All rights reserved.
 // </copyright>
 
@@ -9,7 +9,9 @@ namespace Awful.Parser.Models.Bans
     public class BanPage
     {
         public int CurrentPage { get; set; }
+
         public int TotalPages { get; set; }
-        public List<BanItem> Bans { get; set; } = new List<BanItem>();
+
+        public List<BanItem> Bans { get; } = new List<BanItem>();
     }
 }

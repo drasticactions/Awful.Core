@@ -1,8 +1,12 @@
-﻿using Awful.Parser.Models.PostIcons;
-using Awful.Parser.Models.Posts;
+﻿// <copyright file="PrivateMessage.cs" company="Drastic Actions">
+// Copyright (c) Drastic Actions. All rights reserved.
+// </copyright>
+
 using System;
 using System.Collections.Generic;
 using System.Text;
+using Awful.Parser.Models.PostIcons;
+using Awful.Parser.Models.Posts;
 
 namespace Awful.Parser.Models.Messages
 {
@@ -22,9 +26,12 @@ namespace Awful.Parser.Models.Messages
 
         public Post Post { get; set; }
 
-        public string MessageUrl { get; set; }
-        public string ImageIconUrl { get; internal set; }
-        public string StatusImageIconUrl { get; internal set; }
+        public string MessageEndpoint { get; set; }
+
+        public string ImageIconEndpoint { get; internal set; }
+
+        public string StatusImageIconEndpoint { get; internal set; }
+
         public string StatusImageIconLocation { get; internal set; }
     }
 }

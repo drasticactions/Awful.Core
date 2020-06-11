@@ -259,8 +259,8 @@ namespace Awful.Parser.Handlers
             }
 
             var img = element.QuerySelector("img");
-            thread.ImageIconUrl = img.GetAttribute("src");
-            thread.ImageIconLocation = Path.GetFileNameWithoutExtension(thread.ImageIconUrl);
+            thread.ImageIconEndpoint = img.GetAttribute("src");
+            thread.ImageIconLocation = Path.GetFileNameWithoutExtension(thread.ImageIconEndpoint);
         }
 
         private static void ParseIcon2(IElement element, Thread thread)
@@ -271,8 +271,8 @@ namespace Awful.Parser.Handlers
             }
 
             var img = element.QuerySelector("img");
-            thread.StoreImageIconUrl = img.GetAttribute("src");
-            thread.StoreImageIconLocation = Path.GetFileNameWithoutExtension(thread.StoreImageIconUrl);
+            thread.StoreImageIconEndpoint = img.GetAttribute("src");
+            thread.StoreImageIconLocation = Path.GetFileNameWithoutExtension(thread.StoreImageIconEndpoint);
         }
 
         private static void ParseTitle(IElement element, Thread thread)
@@ -337,8 +337,8 @@ namespace Awful.Parser.Handlers
             }
 
             var img = element.QuerySelector("img");
-            thread.RatingImageUrl = img.GetAttribute("src");
-            thread.RatingImage = Path.GetFileNameWithoutExtension(thread.RatingImageUrl);
+            thread.RatingImageEndpoint = img.GetAttribute("src");
+            thread.RatingImage = Path.GetFileNameWithoutExtension(thread.RatingImageEndpoint);
             var firstSplit = img.GetAttribute("title").Split('-');
             thread.TotalRatingVotes = Convert.ToInt32(Regex.Match(firstSplit[0], @"\d+").Value, CultureInfo.InvariantCulture);
             thread.Rating = Convert.ToDecimal(Regex.Match(firstSplit[1], @"[\d]{1,4}([.,][\d]{1,2})?").Value, CultureInfo.InvariantCulture);

@@ -39,7 +39,7 @@ namespace Awful.Parser.Managers
             var page = 0;
             while (true)
             {
-                var result = await this.GetPrivateMessageListAsync(page, token).ConfigureAwait(false); ;
+                var result = await this.GetPrivateMessageListAsync(page, token).ConfigureAwait(false);
                 pmList.AddRange(result);
                 if (!result.Any())
                 {
@@ -62,7 +62,7 @@ namespace Awful.Parser.Managers
             var url = EndPoints.PrivateMessages;
             if (page > 0)
             {
-                url = EndPoints.PrivateMessages + string.Format(EndPoints.PageNumber, page);
+                url = EndPoints.PrivateMessages + string.Format(CultureInfo.InvariantCulture, EndPoints.PageNumber, page);
             }
 
             var result = await this.webManager.GetDataAsync(url, token).ConfigureAwait(false);
@@ -78,12 +78,17 @@ namespace Awful.Parser.Managers
             }
 
             var pm = new PrivateMessage() { Id = id };
-            await GetPrivateMessageAsync(pm, token);
+            await this.GetPrivateMessageAsync(pm, token).ConfigureAwait(false);
             return pm.Post;
         }
 
         public async Task<Post> GetPrivateMessageAsync(PrivateMessage message, CancellationToken token = default)
         {
+            if (message == null)
+            {
+                throw new ArgumentNullException(nameof(message));
+            }
+
             if (!this.webManager.IsAuthenticated)
             {
                 throw new UserAuthenticationException(Awful.Core.Resources.ExceptionMessages.UserAuthenticationError);
@@ -97,6 +102,11 @@ namespace Awful.Parser.Managers
 
         public async Task<Result> SendPrivateMessageAsync(NewPrivateMessage newPrivateMessageEntity, CancellationToken token = default)
         {
+            if (newPrivateMessageEntity == null)
+            {
+                throw new ArgumentNullException(nameof(newPrivateMessageEntity));
+            }
+
             if (!this.webManager.IsAuthenticated)
             {
                 throw new UserAuthenticationException(Awful.Core.Resources.ExceptionMessages.UserAuthenticationError);
@@ -104,13 +114,13 @@ namespace Awful.Parser.Managers
 
             using var form = new MultipartFormDataContent
             {
-                {new StringContent("dosend"), "action"},
-                {new StringContent(newPrivateMessageEntity.Receiver), "touser"},
-                {new StringContent(HtmlHelpers.HtmlEncode(newPrivateMessageEntity.Title)), "title"},
-                {new StringContent(HtmlHelpers.HtmlEncode(newPrivateMessageEntity.Body)), "message"},
-                {new StringContent("yes"), "parseurl"},
-                {new StringContent("yes"), "parseurl"},
-                {new StringContent("Send Message"), "submit"}
+                { new StringContent("dosend"), "action" },
+                { new StringContent(newPrivateMessageEntity.Receiver), "touser" },
+                { new StringContent(HtmlHelpers.HtmlEncode(newPrivateMessageEntity.Title)), "title" },
+                { new StringContent(HtmlHelpers.HtmlEncode(newPrivateMessageEntity.Body)), "message" },
+                { new StringContent("yes"), "parseurl" },
+                { new StringContent("yes"), "parseurl" },
+                { new StringContent("Send Message"), "submit" },
             };
             if (newPrivateMessageEntity.Icon != null)
             {

@@ -103,6 +103,11 @@ namespace Awful.Parser.Managers
 
         public async Task<Result> CreateNewThreadAsync(NewThread newThreadEntity, CancellationToken token = default)
         {
+            if (newThreadEntity == null)
+            {
+                throw new ArgumentNullException(nameof(newThreadEntity));
+            }
+
             if (!this.webManager.IsAuthenticated)
             {
                 throw new UserAuthenticationException(Awful.Core.Resources.ExceptionMessages.UserAuthenticationError);
@@ -110,21 +115,26 @@ namespace Awful.Parser.Managers
 
             using var form = new MultipartFormDataContent
             {
-                {new StringContent("postthread"), "action"},
-                {new StringContent(newThreadEntity.ForumId.ToString(CultureInfo.InvariantCulture)), "forumid" },
-                {new StringContent(newThreadEntity.FormKey), "formkey" },
-                {new StringContent(newThreadEntity.FormCookie), "form_cookie" },
-                {new StringContent(newThreadEntity.PostIcon.Id.ToString(CultureInfo.InvariantCulture)), "iconid" },
-                {new StringContent(HtmlHelpers.HtmlEncode(newThreadEntity.Subject)), "subject" },
-                {new StringContent(HtmlHelpers.HtmlEncode(newThreadEntity.Content)), "message" },
-                {new StringContent(newThreadEntity.ParseUrl.ToString()), "parseurl" },
-                {new StringContent("Submit Reply"), "submit" },
+                { new StringContent("postthread"), "action" },
+                { new StringContent(newThreadEntity.ForumId.ToString(CultureInfo.InvariantCulture)), "forumid" },
+                { new StringContent(newThreadEntity.FormKey), "formkey" },
+                { new StringContent(newThreadEntity.FormCookie), "form_cookie" },
+                { new StringContent(newThreadEntity.PostIcon.Id.ToString(CultureInfo.InvariantCulture)), "iconid" },
+                { new StringContent(HtmlHelpers.HtmlEncode(newThreadEntity.Subject)), "subject" },
+                { new StringContent(HtmlHelpers.HtmlEncode(newThreadEntity.Content)), "message" },
+                { new StringContent(newThreadEntity.ParseUrl.ToString()), "parseurl" },
+                { new StringContent("Submit Reply"), "submit" },
             };
             return await this.webManager.PostFormDataAsync(EndPoints.NewThreadBase, form, token).ConfigureAwait(false);
         }
 
         public async Task<Post> CreateNewThreadPreviewAsync(NewThread newThreadEntity, CancellationToken token = default)
         {
+            if (newThreadEntity == null)
+            {
+                throw new ArgumentNullException(nameof(newThreadEntity));
+            }
+
             if (!this.webManager.IsAuthenticated)
             {
                 throw new UserAuthenticationException(Awful.Core.Resources.ExceptionMessages.UserAuthenticationError);
@@ -135,16 +145,16 @@ namespace Awful.Parser.Managers
             // From here we can parse that preview and return it to the user.
             using var form = new MultipartFormDataContent
             {
-                {new StringContent("postthread"), "action" },
-                {new StringContent(newThreadEntity.ForumId.ToString(CultureInfo.InvariantCulture)), "forumid" },
-                {new StringContent(newThreadEntity.FormKey), "formkey" },
-                {new StringContent(newThreadEntity.FormCookie), "form_cookie" },
-                {new StringContent(newThreadEntity.PostIcon.Id.ToString(CultureInfo.InvariantCulture)), "iconid" },
-                {new StringContent(HtmlHelpers.HtmlEncode(newThreadEntity.Subject)), "subject" },
-                {new StringContent(HtmlHelpers.HtmlEncode(newThreadEntity.Content)), "message" },
-                {new StringContent(newThreadEntity.ParseUrl.ToString()), "parseurl" },
-                {new StringContent("Submit Post"), "submit" },
-                {new StringContent("Preview Post"), "preview" },
+                { new StringContent("postthread"), "action" },
+                { new StringContent(newThreadEntity.ForumId.ToString(CultureInfo.InvariantCulture)), "forumid" },
+                { new StringContent(newThreadEntity.FormKey), "formkey" },
+                { new StringContent(newThreadEntity.FormCookie), "form_cookie" },
+                { new StringContent(newThreadEntity.PostIcon.Id.ToString(CultureInfo.InvariantCulture)), "iconid" },
+                { new StringContent(HtmlHelpers.HtmlEncode(newThreadEntity.Subject)), "subject" },
+                { new StringContent(HtmlHelpers.HtmlEncode(newThreadEntity.Content)), "message" },
+                { new StringContent(newThreadEntity.ParseUrl.ToString()), "parseurl" },
+                { new StringContent("Submit Post"), "submit" },
+                { new StringContent("Preview Post"), "preview" },
             };
 
             var result = await this.webManager.PostFormDataAsync(EndPoints.NewThreadBase, form, token).ConfigureAwait(false);
