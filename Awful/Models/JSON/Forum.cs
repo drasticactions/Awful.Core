@@ -11,7 +11,7 @@ using System.Text.Json.Serialization;
 
 namespace Awful.Core.Models.JSON
 {
-    public partial class Forum
+    public class Forum
     {
         [JsonPropertyName("id")]
         public long Id { get; set; }

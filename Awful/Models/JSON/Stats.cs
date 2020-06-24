@@ -11,7 +11,7 @@ using System.Text.Json.Serialization;
 
 namespace Awful.Core.Models.JSON
 {
-    public partial class Stats
+    public class Stats
     {
         [JsonPropertyName("archived_posts")]
         public long ArchivedPosts { get; set; }

@@ -11,7 +11,7 @@ using System.Text.Json.Serialization;
 
 namespace Awful.Core.Models.JSON
 {
-    public partial class IndexPage
+    public class IndexPage
     {
         [JsonPropertyName("stats")]
         public Stats Stats { get; set; }
@@ -20,6 +20,6 @@ namespace Awful.Core.Models.JSON
         public User User { get; set; }
 
         [JsonPropertyName("forums")]
-        public List<Forum> Forums { get; }
+        public List<Forum> Forums { get; set;  }
     }
 }
