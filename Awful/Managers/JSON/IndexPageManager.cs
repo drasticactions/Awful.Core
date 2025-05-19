@@ -31,10 +31,10 @@ namespace Awful.Core.Managers.JSON
 
             if (!addAdditionalMetadata)
             {
-                return JsonSerializer.Deserialize<IndexPage>(result.ResultHtml);
+                return JsonSerializer.Deserialize<IndexPage>(result.ResultHtml, SourceGenerationContext.Default.IndexPage);
             }
 
-            var data = JsonSerializer.Deserialize<IndexPage>(result.ResultHtml);
+            var data = JsonSerializer.Deserialize<IndexPage>(result.ResultHtml, SourceGenerationContext.Default.IndexPage);
 
             foreach (var forum in data.Forums)
             {
@@ -48,7 +48,7 @@ namespace Awful.Core.Managers.JSON
         {
             var result = await this.webManager.GetDataAsync(EndPoints.IndexPageUrl, token).ConfigureAwait(false);
 
-            var data = JsonSerializer.Deserialize<IndexPage>(result.ResultHtml);
+            var data = JsonSerializer.Deserialize<IndexPage>(result.ResultHtml, SourceGenerationContext.Default.IndexPage);
 
             foreach (var forum in data.Forums)
             {

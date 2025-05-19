@@ -48,11 +48,16 @@ namespace Awful.Parser.Core
 
             this.httpClientHandler = new HttpClientHandler
             {
-                AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate,
                 UseCookies = true,
                 UseDefaultCredentials = false,
                 CookieContainer = this.CookieContainer,
             };
+
+            if (this.httpClientHandler.SupportsAutomaticDecompression)
+            {
+                this.httpClientHandler.AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate;
+            }
+
             this.Client = new HttpClient(this.httpClientHandler);
             this.Client.DefaultRequestHeaders.CacheControl = new System.Net.Http.Headers.CacheControlHeaderValue()
             {

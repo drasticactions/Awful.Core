@@ -2,9 +2,13 @@
 // Copyright (c) Drastic Actions. All rights reserved.
 // </copyright>
 
+using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Runtime.Serialization.Formatters.Binary;
+using System.Text.Json;
+using Awful.Models;
 
 namespace Awful.Parser.Handlers
 {
@@ -20,9 +24,17 @@ namespace Awful.Parser.Handlers
         /// <returns>A CookieContainer.</returns>
         public static CookieContainer LoadCookie(string path)
         {
-            using FileStream stream = File.OpenRead(path);
-            var formatter = new BinaryFormatter();
-            return (CookieContainer)formatter.Deserialize(stream);
+            var json = File.ReadAllText(path);
+            var serializableCookies = JsonSerializer.Deserialize<List<SerializableCookie>>(json, SourceGenerationContext.Default.ListSerializableCookie);
+            var container = new CookieContainer();
+
+            foreach (var serializableCookie in serializableCookies)
+            {
+                var cookie = serializableCookie.ToCookie();
+                container.Add(cookie);
+            }
+
+            return container;
         }
 
         /// <summary>
@@ -32,9 +44,21 @@ namespace Awful.Parser.Handlers
         /// <param name="path">The path where the cookie should be saved.</param>
         public static void SaveCookie(CookieContainer cookieContainer, string path)
         {
-            using FileStream stream = File.Create(path);
-            var formatter = new BinaryFormatter();
-            formatter.Serialize(stream, cookieContainer);
+            var serializableCookies = new List<SerializableCookie>();
+
+            var knownDomains = GetKnownDomains();
+
+            foreach (var domain in knownDomains)
+            {
+                var cookies = cookieContainer.GetCookies(new Uri(domain));
+                foreach (Cookie cookie in cookies)
+                {
+                    serializableCookies.Add(SerializableCookie.FromCookie(cookie));
+                }
+            }
+
+            var json = JsonSerializer.Serialize(serializableCookies, SourceGenerationContext.Default.ListSerializableCookie);
+            File.WriteAllText(path, json);
         }
 
         /// <summary>
@@ -44,6 +68,14 @@ namespace Awful.Parser.Handlers
         public static void RemoveCookie(string path)
         {
             System.IO.File.Delete(path);
+        }
+
+        private static List<string> GetKnownDomains()
+        {
+            return new List<string>
+            {
+                "https://forums.somethingawful.com",
+            };
         }
     }
 }

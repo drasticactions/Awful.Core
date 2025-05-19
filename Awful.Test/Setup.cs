@@ -1,4 +1,5 @@
 ﻿using Awful.Parser.Core;
+using Awful.Parser.Handlers;
 using Awful.Parser.Managers;
 using System;
 using System.Collections.Generic;
@@ -24,25 +25,13 @@ namespace Awful.Test
                 var result = await authManager.AuthenticateAsync(username, password);
                 if (!result.IsSuccess)
                     throw new Exception("Could not log in!");
-                using (FileStream stream = File.Create("user.cookies"))
-                {
-                    var formatter = new BinaryFormatter();
-                    System.Console.WriteLine("Serializing cookie container");
-                    formatter.Serialize(stream, WebClient.CookieContainer);
-                }
+                CookieManager.SaveCookie(result.AuthenticationCookieContainer, "user.cookies");
 
                 return WebClient;
             }
             else
             {
-                System.Net.CookieContainer cookieContainer;
-                using (FileStream stream = File.OpenRead("user.cookies"))
-                {
-                    var formatter = new BinaryFormatter();
-                    System.Console.WriteLine("Deserializing cookie container");
-                    cookieContainer = (System.Net.CookieContainer)formatter.Deserialize(stream);
-                    return new WebClient(cookieContainer);
-                }
+                return new WebClient(CookieManager.LoadCookie("user.cookies"));
             }
         }
     }
