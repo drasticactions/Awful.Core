@@ -20,6 +20,6 @@ namespace Awful.Core.Models.JSON
         public User User { get; set; }
 
         [JsonPropertyName("forums")]
-        public List<Forum> Forums { get; set;  }
+        public List<Forum> Forums { get; set; }
     }
 }

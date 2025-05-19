@@ -11,9 +11,9 @@ namespace Awful.Test
     public class ManagerTest
     {
 
-        public ManagerTest ()
+        public ManagerTest()
         {
-          
+
         }
 
         [Fact]
@@ -93,7 +93,7 @@ namespace Awful.Test
             var forumCatList = await forumManager.GetForumCategoriesAsync();
             Assert.NotNull(forumCatList);
             Assert.True(forumCatList.Any());
-            
+
             ThreadListManager threadManager = new ThreadListManager(WebClient);
             var result = await threadManager.GetForumThreadListAsync(forumCatList.First().ForumList.First().ForumId, 1);
             Assert.NotNull(result);

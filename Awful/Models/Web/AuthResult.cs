@@ -40,6 +40,6 @@ namespace Awful.Parser.Models.Web
         /// <summary>
         /// Gets or sets the serialized authentication cookie from logging in.
         /// </summary>
-        public CookieContainer AuthenticationCookieContainer { get; set;  }
+        public CookieContainer AuthenticationCookieContainer { get; set; }
     }
 }
